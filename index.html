@@ -2320,6 +2320,19 @@ document.addEventListener("change", function(e){
 
 
 
+async function testarSupabase() {
+  const { data, error } = await supabase
+    .from("produtos")
+    .select("*");
+
+  console.log("DADOS DO SUPABASE:", data);
+  console.log("ERRO:", error);
+}
+
+testarSupabase();
+
+ 
+
 
 window.onload=function(){
 atualizarProdutos();
@@ -2411,4 +2424,5 @@ atualizarClientes();
 
 
 </html>
+
 
