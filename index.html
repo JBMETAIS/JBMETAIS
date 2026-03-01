@@ -612,8 +612,8 @@ async function addProduto() {
       codigo: codigo,
       custo: custo,
       venda: venda,
-      qtd: quantidade,
-      min: minimo
+      quantidade: quantidade,   
+      minimo: minimo            
     }]);
 
   if (error) {
@@ -624,7 +624,6 @@ async function addProduto() {
     carregarProdutos();
   }
 }
-
 
 
 
@@ -2449,6 +2448,7 @@ atualizarClientes();
 
 
 </html>
+
 
 
 
