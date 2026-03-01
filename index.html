@@ -491,6 +491,20 @@ R$ <span id="total">0.00</span>
 </div>
 </div>
 
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+  const SUPABASE_URL = "https://mvjhvzzuijrlzrzmywcl.supabase.co"
+  const SUPABASE_KEY = "sb_publishable_9KqHb2QZvr6HbT6UUZWJXQ_PGvdHHD_"
+
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+</script>
+
+ 
+
+ 
 <script>
 
 let produtos=JSON.parse(localStorage.getItem("produtosJB"))||[];
@@ -579,36 +593,36 @@ parcelas.innerHTML+=`<option value="${i}">${i}x</option>`;
 }
 }
 
-function addProduto(){
-const nome=pNome.value.trim();
-const codigo=pCodigo.value.trim();
-const custo=parseFloat(pCusto.value);
-const venda=parseFloat(pVenda.value);
-const qtd=parseInt(pQtd.value);
-const min=parseInt(pMin.value);
+async function addProduto() {
 
-if(!nome||!codigo||isNaN(custo)||isNaN(venda)||isNaN(qtd)||isNaN(min)){
-alert("Preencha tudo");
-return;
+  let produto = document.getElementById("produto").value;
+  let codigo = document.getElementById("codigo").value;
+  let custo = parseFloat(document.getElementById("custo").value);
+  let venda = parseFloat(document.getElementById("venda").value);
+  let quantidade = parseInt(document.getElementById("quantidade").value);
+  let minimo = parseInt(document.getElementById("minimo").value);
+
+  const { data, error } = await supabase
+    .from("produtos")
+    .insert([
+      {
+        produto: produto,
+        codigo: codigo,
+        custo: custo,
+        venda: venda,
+        quantidade: quantidade,
+        minimo: minimo
+      }
+    ]);
+
+  if (error) {
+    alert("Erro ao salvar: " + error.message);
+    console.log(error);
+  } else {
+    alert("Produto salvo na nuvem com sucesso!");
+  }
 }
-
-const existente = produtos.find(p => p.codigo === codigo);
-
-if(existente){
-existente.qtd += qtd;
-existente.custo = custo;
-existente.venda = venda;
-alert("Produto já existente.");
-}else{
-produtos.push({nome,codigo,custo,venda,qtd,min});
-alert("Produto cadastrado.");
-}
-
-localStorage.setItem("produtosJB",JSON.stringify(produtos));
-atualizarProdutos();
-atualizarSelect();
-}
-
+ 
 function buscarProduto(){
 const termo = buscaProduto.value.toLowerCase().trim();
 
@@ -2397,3 +2411,4 @@ atualizarClientes();
 
 
 </html>
+
