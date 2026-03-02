@@ -1128,15 +1128,15 @@ imprimirCupom(venda.total, "REIMPRESSÃO", venda);
 
 
 function reimprimirOrcamento(index){
-
-let numeroFormatado = String(orc.numero || 0).padStart(4,'0');
- 
-let numeroFormatado = String(orc.numero || 0).padStart(4,'0');
  
 let orc = vendas[index];
 
 let empresa = JSON.parse(localStorage.getItem("configJB")) || {};
 
+let numeroFormatado = String(orc.numero || 0).padStart(4,'0');
+
+let numeroFormatado = String(orc.numero || 0).padStart(4,'0');
+ 
 let w = window.open("", "", "width=900,height=700");
 
 let html = `
@@ -2672,6 +2672,7 @@ atualizarClientes();
 
 </body>
 </html>
+
 
 
 
