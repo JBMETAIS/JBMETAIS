@@ -492,61 +492,41 @@ R$ <span id="total">0.00</span>
 </div>
 
 
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
+  const SUPABASE_URL = "https://mvjhvzzuijrlzrzmywcl.supabase.co"
+  const SUPABASE_KEY = "sb_publishable_9KqHb2QZvr6HbT6UUZWJXQ_PGvdHHD_"
 
-// 🔥 CONFIGURAÇÃO SUPABASE
-const SUPABASE_URL = "https://mvjhvzzuijrlzrzmywcl.supabase.com";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im12amh2enp1aWpybHpyem15d2NsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIzMjcwMjAsImV4cCI6MjA4NzkwMzAyMH0.YRaa3s-3HCWuZ04Lbo8kUVi_DXv8ts8QEjluSj9ZQDw";
-
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
-
+  const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
 </script>
-// 🔥 ARRAYS AGORA COMEÇAM VAZIOS
-let produtos = [];
-let vendas = [];
-let clientes = [];
-let extratos = [];
-let config = {};
-
-let numeroRecibo = 1;
-let clientePagamentoAtual = null;
-
-let carrinho = [];
-let descontoAtual = 0;
-
-
-async function carregarDados(){
-
-  const { data: p } = await supabaseClient.from("produtos").select("*");
-  const { data: v } = await supabaseClient.from("vendas").select("*");
-  const { data: c } = await supabaseClient.from("clientes").select("*");
-  const { data: e } = await supabaseClient.from("extratos").select("*");
-
-  produtos = p || [];
-  vendas = v || [];
-  clientes = c || [];
-  extratos = e || [];
-}
-
-
-
-function show(id){
-  document.querySelectorAll("section").forEach(s=>{
-    s.style.display = "none";
-  });
-
-  document.getElementById(id).style.display = "block";
-
-  if(id === "estoque") atualizarEstoque();
-  if(id === "historico") atualizarHistorico();
-}
 
  
+
+ 
+<script>
+
+let produtos=JSON.parse(localStorage.getItem("produtosJB"))||[];
+let vendas=JSON.parse(localStorage.getItem("vendasJB"))||[];
+let config=JSON.parse(localStorage.getItem("configJB"))||{};
+let clientes = JSON.parse(localStorage.getItem("clientesJB")) || [];
+let extratos = JSON.parse(localStorage.getItem("extratosJB")) || [];
+let numeroRecibo = parseInt(localStorage.getItem("numeroRecibo")) || 1;
+let clientePagamentoAtual = null;
+
+let carrinho=[];
+let descontoAtual=0;
+
+function show(id){
+document.querySelectorAll("section").forEach(s=>s.style.display="none");
+document.getElementById(id).style.display="block";
+if(id==="estoque") atualizarEstoque();
+if(id==="historico") atualizarHistorico();
+}
 
 function atualizarFormaPagamento(){
 
@@ -618,65 +598,61 @@ parcelas.innerHTML+=`<option value="${i}">${i}x</option>`;
 
 async function addProduto() {
 
-  const produto = pNome.value.trim();
-  const codigo = pCodigo.value.trim();
-  const custo = parseFloat(pCusto.value);
-  const venda = parseFloat(pVenda.value);
-  const quantidade = parseFloat(pQtd.value);
-  const minimo = parseFloat(pMin.value);
- 
-  if (!produto || !codigo || isNaN(custo) || isNaN(venda) || isNaN(quantidade)) {
-    alert("Preencha todos os campos corretamente!");
-    return;
-  }
-
-  const { error } = await supabaseClient
+  const { data, error } = await supabaseClient
     .from("produtos")
-    .insert([
-      {
-        produto,
-        codigo,
-        custo,
-        venda,
-        quantidade,
-        minimo,
-        criado_em: new Date()
-      }
-    ]);
+    .insert([{
+      produto: pNome.value,
+      codigo: pCodigo.value,
+      custo: Number(pCusto.value),
+      venda: Number(pVenda.value),
+      quantidade: Number(pQtd.value),
+      minimo: Number(pMin.value)
+    }]);
 
   if (error) {
-    alert("Erro ao salvar: " + error.message);
+    console.error("Erro ao salvar:", error);
+    alert("Erro ao salvar produto");
     return;
   }
 
   alert("Produto salvo com sucesso!");
 
-  limparCamposProduto();
-  await carregarProdutos();
+  // opcional: limpar campos
+  pNome.value = "";
+  pCodigo.value = "";
+  pCusto.value = "";
+  pVenda.value = "";
+  pQtd.value = "";
+  pMin.value = "";
+
+  carregarProdutos(); // atualiza lista
+}
+
+  console.log("DATA:", data);
+  console.log("ERROR:", error);
 }
 
 
 
-
-async function carregarProdutos() {
+ async function carregarProdutos() {
 
   const { data, error } = await supabaseClient
     .from("produtos")
-    .select("*")
-    .order("id", { ascending: true });
+    .select("*");
 
   if (error) {
-    alert(error.message);
+    console.log(error);
     return;
   }
 
-  produtos = data || [];
+  produtos = data; // substitui o array local
   atualizarProdutos();
+  atualizarSelect();
 }
 
 
-
  
+
 
  
 function buscarProduto(){
@@ -699,69 +675,41 @@ return;
 prod.innerHTML="";
 produtos.forEach((p,i)=>{
 if(
-p.produto.toLowerCase().includes(termo) ||
+p.nome.toLowerCase().includes(termo) ||
 p.codigo.toLowerCase().includes(termo)
 ){
-prod.innerHTML+=`<option value="${i}">${p.produto}</option>`;
+prod.innerHTML+=`<option value="${i}">${p.nome}</option>`;
 }
 });
 }
 
-function atualizarProdutos() {
-
-  const t = tProdutos;
-
-  t.innerHTML = `
-    <tr>
-      <th>Nome</th>
-      <th>Código</th>
-      <th>Venda</th>
-      <th>Qtd</th>
-      <th>Ação</th>
-    </tr>
-  `;
-
-  produtos.forEach(function(p){
-
-    console.log(p);
-
-    t.innerHTML += `
-      <tr>
-        <td>${p.produto || ""}</td>
-        <td>${p.codigo || ""}</td>
-        <td>R$ ${p.venda ? Number(p.venda).toFixed(2) : "0.00"}</td>
-        <td>${p.quantidade || 0}</td>
-        <td>
-          <button class="red" onclick="excluirProduto(${p.id})">Excluir</button>
-        </td>
-      </tr>
-    `;
-  });
-
+function atualizarProdutos(){
+const t=tProdutos;
+t.innerHTML="<tr><th>Nome</th><th>Código</th><th>Venda</th><th>Qtd</th><th>Ação</th></tr>";
+produtos.forEach((p,index)=>{
+t.innerHTML+=`<tr>
+<td>${p.nome}</td>
+<td>${p.codigo}</td>
+<td>R$ ${p.venda.toFixed(2)}</td>
+<td>${p.qtd}</td>
+<td><button class="red" onclick="excluirProduto(${index})">Excluir</button></td>
+</tr>`;
+});
 }
 
- 
-async function excluirProduto(id) {
-
-  if (!confirm("Deseja excluir este produto?")) return;
-
-  const { error } = await supabaseClient
-    .from("produtos")
-    .delete()
-    .eq("id", id);
-
-  if (error) {
-    alert(error.message);
-    return;
-  }
-
-  await carregarProdutos();
+function excluirProduto(index){
+if(confirm("Deseja excluir este produto?")){
+produtos.splice(index,1);
+localStorage.setItem("produtosJB",JSON.stringify(produtos));
+atualizarProdutos();
+atualizarSelect();
+}
 }
 
 function atualizarSelect(){
 prod.innerHTML="";
 produtos.forEach((p,i)=>{
-prod.innerHTML+=`<option value="${i}">${p.produto}</option>`;
+prod.innerHTML+=`<option value="${i}">${p.nome}</option>`;
 });
 }
 
@@ -769,14 +717,14 @@ function addItem(){
 const index=prod.value;
 const qtdVal=parseInt(qtd.value);
 
-if(produtos[index].quantidade < qtdVal){
+if(produtos[index].qtd<qtdVal){
 alert("Estoque insuficiente");
 return;
 }
 
 carrinho.push({
 index:index,
-nome:produtos[index].produto,
+nome:produtos[index].nome,
 preco:produtos[index].venda,
 qtd:qtdVal
 });
@@ -890,7 +838,7 @@ saldoApos: cliente.saldo
 });
 
 carrinho.forEach(item=>{
-produtos[item.index].quantidade -= item.qtd;
+produtos[item.index].qtd -= item.qtd;
 });
 
 localStorage.setItem("clientesJB", JSON.stringify(clientes));
@@ -1464,7 +1412,7 @@ tEstoque.innerHTML=`
 
 produtos.forEach(p=>{
 
-let baixo = p.quantidade <= p.minimo;
+let baixo = p.qtd <= p.min;
 
 let status = baixo ? "BAIXO" : "OK";
 
@@ -1488,10 +1436,10 @@ background:#1fa84f;
 
 tEstoque.innerHTML+=`
 <tr>
-<td>${p.produto}</td>
+<td>${p.nome}</td>
 
 <td style="text-align:center;">
-${p.quantidade}
+${p.qtd}
 </td>
 
 <td style="text-align:center; color:${corStatus}; font-weight:bold;">
@@ -2404,18 +2352,26 @@ document.addEventListener("change", function(e){
 
 
 
+async function testarSupabase() {
+  const { data, error } = await supabaseClient
+    .from("produtos")
+    .select("*");
 
-window.onload = async function(){
+  console.log("DADOS DO SUPABASE:", data);
+  console.log("ERRO:", error);
+}
 
-  await carregarDados();
-
-  atualizarProdutos();
-  atualizarSelect();
-  preencherParcelas();
-  atualizarClientes();
-};
+testarSupabase();
 
  
+
+
+window.onload=function(){
+carregarProdutos(); // 🔥 agora vem da nuvem
+preencherParcelas();
+atualizarClientes();
+};
+
 </script>
 
 </body>
@@ -2497,7 +2453,9 @@ window.onload = async function(){
 
 
 
+
 </html>
+
 
 
 
