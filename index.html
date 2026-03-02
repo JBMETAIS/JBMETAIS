@@ -491,23 +491,6 @@ R$ <span id="total">0.00</span>
 </div>
 </div>
 
-
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>
-  const SUPABASE_URL = "https://mvjhvzzuijrlzrzmywcl.supabase.co"
-  const SUPABASE_KEY = "sb_publishable_9KqHb2QZvr6HbT6UUZWJXQ_PGvdHHD_"
-
-  const supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
-</script>
-
- 
-
- 
 <script>
 
 let produtos=JSON.parse(localStorage.getItem("produtosJB"))||[];
@@ -596,59 +579,36 @@ parcelas.innerHTML+=`<option value="${i}">${i}x</option>`;
 }
 }
 
-async function addProduto() {
+function addProduto(){
+const nome=pNome.value.trim();
+const codigo=pCodigo.value.trim();
+const custo=parseFloat(pCusto.value);
+const venda=parseFloat(pVenda.value);
+const qtd=parseInt(pQtd.value);
+const min=parseInt(pMin.value);
 
-  const { data, error } = await supabaseClient
-    .from("produtos")
-    .insert([{
-      produto: pNome.value,
-      codigo: pCodigo.value,
-      custo: Number(pCusto.value),
-      venda: Number(pVenda.value),
-      quantidade: Number(pQtd.value),
-      minimo: Number(pMin.value)
-    }]);
-
-  if (error) {
-    console.error("Erro:", error);
-    alert("Erro ao salvar produto");
-    return;
-  }
-
-  alert("Produto salvo!");
-
-  pNome.value = "";
-  pCodigo.value = "";
-  pVenda.value = "";
-  pCusto.value = "";
-  pQtd.value = "";
-  pMin.value = "";
-
-  carregarProdutos();
+if(!nome||!codigo||isNaN(custo)||isNaN(venda)||isNaN(qtd)||isNaN(min)){
+alert("Preencha tudo");
+return;
 }
 
+const existente = produtos.find(p => p.codigo === codigo);
 
- async function carregarProdutos() {
-
-  const { data, error } = await supabaseClient
-    .from("produtos")
-    .select("*");
-
-  if (error) {
-    console.log(error);
-    return;
-  }
-
-  produtos = data; // substitui o array local
-  atualizarProdutos();
-  atualizarSelect();
+if(existente){
+existente.qtd += qtd;
+existente.custo = custo;
+existente.venda = venda;
+alert("Produto já existente.");
+}else{
+produtos.push({nome,codigo,custo,venda,qtd,min});
+alert("Produto cadastrado.");
 }
 
+localStorage.setItem("produtosJB",JSON.stringify(produtos));
+atualizarProdutos();
+atualizarSelect();
+}
 
- 
-
-
- 
 function buscarProduto(){
 const termo = buscaProduto.value.toLowerCase().trim();
 
@@ -669,13 +629,28 @@ return;
 prod.innerHTML="";
 produtos.forEach((p,i)=>{
 if(
-    p.produto.toLowerCase().includes(termo) ||
-    p.codigo.toLowerCase().includes(termo)
+p.nome.toLowerCase().includes(termo) ||
+p.codigo.toLowerCase().includes(termo)
 ){
-
+prod.innerHTML+=`<option value="${i}">${p.nome}</option>`;
+}
+});
 }
 
- 
+function atualizarProdutos(){
+const t=tProdutos;
+t.innerHTML="<tr><th>Nome</th><th>Código</th><th>Venda</th><th>Qtd</th><th>Ação</th></tr>";
+produtos.forEach((p,index)=>{
+t.innerHTML+=`<tr>
+<td>${p.nome}</td>
+<td>${p.codigo}</td>
+<td>R$ ${p.venda.toFixed(2)}</td>
+<td>${p.qtd}</td>
+<td><button class="red" onclick="excluirProduto(${index})">Excluir</button></td>
+</tr>`;
+});
+}
+
 function excluirProduto(index){
 if(confirm("Deseja excluir este produto?")){
 produtos.splice(index,1);
@@ -685,34 +660,12 @@ atualizarSelect();
 }
 }
 
-
-
-function atualizarProdutos(){
-   t.innerHTML = "";
-
-   produtos.forEach(p=>{
-      t.innerHTML += `
-      <tr>
-        <td>${p.produto}</td>
-        <td>${p.codigo}</td>
-        <td>${p.quantidade}</td>
-      </tr>`;
-   });
-}
-
-
-
-
-
-
-
-
 function atualizarSelect(){
 prod.innerHTML="";
 produtos.forEach((p,i)=>{
-prod.innerHTML+=`<option value="${i}">${p.produto}</option>`;
-}
+prod.innerHTML+=`<option value="${i}">${p.nome}</option>`;
 });
+}
 
 function addItem(){
 const index=prod.value;
@@ -839,7 +792,7 @@ saldoApos: cliente.saldo
 });
 
 carrinho.forEach(item=>{
-    produtos[item.index].quantidade -= item.qtd;
+produtos[item.index].qtd -= item.qtd;
 });
 
 localStorage.setItem("clientesJB", JSON.stringify(clientes));
@@ -863,12 +816,7 @@ return; // 🔥 PARA AQUI MESMO
 // ============================
 
 carrinho.forEach(item=>{
-    if(produtos[item.index].quantidade < item.qtd){
-        alert("Estoque insuficiente");
-        return;
-    }
-
-    produtos[item.index].quantidade -= item.qtd;
+produtos[item.index].qtd -= item.qtd;
 });
 
 vendas.push({
@@ -1408,25 +1356,59 @@ w.print();
 
 function atualizarEstoque(){
 
-    tEstoque.innerHTML=`
-    <tr>
-    <th>Produto</th>
-    <th>Qtd</th>
-    <th>Status</th>
-    </tr>`;
+tEstoque.innerHTML=`
+<tr>
+<th style="width:50%;">Produto</th>
+<th style="width:15%; text-align:center;">Qtd</th>
+<th style="width:20%; text-align:center;">Status</th>
+<th style="width:15%; text-align:center;">Alarme</th>
+</tr>`;
 
-    produtos.forEach(p=>{
-        let baixo = p.quantidade <= p.minimo;
-        let status = baixo ? "BAIXO" : "OK";
+produtos.forEach(p=>{
 
-        tEstoque.innerHTML+=`
-        <tr>
-            <td>${p.produto}</td>
-            <td style="text-align:center;">${p.quantidade}</td>
-            <td style="text-align:center;">${status}</td>
-        </tr>`;
-    });
+let baixo = p.qtd <= p.min;
+
+let status = baixo ? "BAIXO" : "OK";
+
+let corStatus = baixo ? "#c62828" : "#1fa84f";
+
+let bolinha = baixo
+? `<span style="
+display:inline-block;
+width:20px;
+height:20px;
+border-radius:50%;
+background:#c62828;
+"></span>`
+: `<span style="
+display:inline-block;
+width:20px;
+height:20px;
+border-radius:50%;
+background:#1fa84f;
+"></span>`;
+
+tEstoque.innerHTML+=`
+<tr>
+<td>${p.nome}</td>
+
+<td style="text-align:center;">
+${p.qtd}
+</td>
+
+<td style="text-align:center; color:${corStatus}; font-weight:bold;">
+${status}
+</td>
+
+<td style="text-align:center;">
+${bolinha}
+</td>
+
+</tr>`;
+});
+
 }
+
 
 function atualizarHistorico(){
 
@@ -2324,22 +2306,10 @@ document.addEventListener("change", function(e){
 
 
 
-async function testarSupabase() {
-  const { data, error } = await supabaseClient
-    .from("produtos")
-    .select("*");
-
-  console.log("DADOS DO SUPABASE:", data);
-  console.log("ERRO:", error);
-}
-
-testarSupabase();
-
- 
-
 
 window.onload=function(){
-carregarProdutos(); // 🔥 agora vem da nuvem
+atualizarProdutos();
+atualizarSelect();
 preencherParcelas();
 atualizarClientes();
 };
@@ -2425,21 +2395,4 @@ atualizarClientes();
 
 
 
-
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
