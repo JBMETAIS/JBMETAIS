@@ -669,27 +669,40 @@ return;
 prod.innerHTML="";
 produtos.forEach((p,i)=>{
 if(
-p.nome.toLowerCase().includes(termo) ||
+p.produto.toLowerCase().includes(termo) ||
 p.codigo.toLowerCase().includes(termo)
 ){
-prod.innerHTML+=`<option value="${i}">${p.nome}</option>`;
+prod.innerHTML+=`<option value="${i}">${p.produto}</option>`;
 }
 });
 }
 
 function atualizarProdutos(){
-const t=tProdutos;
-t.innerHTML="<tr><th>Nome</th><th>Código</th><th>Venda</th><th>Qtd</th><th>Ação</th></tr>";
+const t = tProdutos;
+
+t.innerHTML = `
+<tr>
+<th>Nome</th>
+<th>Código</th>
+<th>Venda</th>
+<th>Qtd</th>
+<th>Ação</th>
+</tr>`;
+
 produtos.forEach((p,index)=>{
-t.innerHTML+=`<tr>
-<td>${p.nome}</td>
+
+t.innerHTML += `
+<tr>
+<td>${p.produto}</td>
 <td>${p.codigo}</td>
-<td>R$ ${p.venda.toFixed(2)}</td>
-<td>${p.qtd}</td>
+<td>R$ ${Number(p.venda).toFixed(2)}</td>
+<td>${p.quantidade}</td>
 <td><button class="red" onclick="excluirProduto(${index})">Excluir</button></td>
 </tr>`;
+
 });
 }
+ 
 
 function excluirProduto(index){
 if(confirm("Deseja excluir este produto?")){
@@ -703,7 +716,7 @@ atualizarSelect();
 function atualizarSelect(){
 prod.innerHTML="";
 produtos.forEach((p,i)=>{
-prod.innerHTML+=`<option value="${i}">${p.nome}</option>`;
+prod.innerHTML+=`<option value="${i}">${p.produto}</option>`;
 });
 }
 
@@ -1406,7 +1419,7 @@ tEstoque.innerHTML=`
 
 produtos.forEach(p=>{
 
-let baixo = p.qtd <= p.min;
+let baixo = p.quantidade <= p.min;
 
 let status = baixo ? "BAIXO" : "OK";
 
@@ -1430,10 +1443,10 @@ background:#1fa84f;
 
 tEstoque.innerHTML+=`
 <tr>
-<td>${p.nome}</td>
+<td>${p.produto}</td>
 
 <td style="text-align:center;">
-${p.qtd}
+${p.quantidade}
 </td>
 
 <td style="text-align:center; color:${corStatus}; font-weight:bold;">
@@ -2449,6 +2462,7 @@ atualizarClientes();
 
 
 </html>
+
 
 
 
