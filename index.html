@@ -1320,9 +1320,7 @@ let pagamento = formaPagamento.value || "Não informado";
 let qtdParcelas = pagamento === "cartao" ? parcelas.value : 1;
 let valorParc = valorParcela.value || "";
 
-// 🔢 gera número sequencial simples
-let numero = Date.now();
-
+// 🔥 NÃO enviamos numero_orcamento
 const { data: orcamentoCriado, error } = await supabaseClient
   .from("vendas")
   .insert([{
@@ -1331,8 +1329,7 @@ const { data: orcamentoCriado, error } = await supabaseClient
     subtotal: subtotal,
     desconto: descontoAtual,
     total: total,
-    tipo: "ORCAMENTO",
-    numero_orcamento: numero
+    tipo: "ORCAMENTO"
   }])
   .select()
   .single();
@@ -1342,6 +1339,9 @@ if(error){
   alert("Erro ao salvar orçamento!");
   return;
 }
+
+// ✅ AGORA sim pegamos o número que o banco gerou
+let numero = orcamentoCriado.numero_orcamento;
 
 const orcamentoId = orcamentoCriado.id;
 
@@ -1364,7 +1364,7 @@ await carregarHistoricoDoBanco();
 
 alert("Orçamento salvo com sucesso!");
 
-// monta objeto igual ao histórico usa
+// monta objeto para impressão A4
 let orcamentoTemp = {
   numero: numero,
   data: new Date().toLocaleDateString(),
@@ -1376,14 +1376,16 @@ let orcamentoTemp = {
   subtotal: subtotal,
   parcelas: qtdParcelas,
   valorParcela: valorParc,
-  itens: JSON.parse(JSON.stringify(carrinho))
+  itens: carrinho.map(item => ({
+    nome: produtos[item.index].produto,
+    qtd: item.qtd,
+    preco: item.preco
+  }))
 };
 
-// abre no layout A4
 imprimirOrcamentoA4(orcamentoTemp);
 
 }
-
 
 
 
@@ -1476,7 +1478,7 @@ font-weight:bold;
 <img src="logo.png" class="logo">
 <div class="titulo">
 <h2>ORÇAMENTO</h2>
-Nº ${orc.numero}<br>
+Nº ${String(orc.numero).padStart(4,'0')}
 Data: ${orc.data}
 </div>
 </div>
@@ -2666,6 +2668,7 @@ atualizarClientes();
 
 </body>
 </html>
+
 
 
 
