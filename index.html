@@ -864,13 +864,18 @@ atualizarCarrinho();
 }
 
 
-function finalizarVenda(){
+async function finalizarVenda(){
 
 if(carrinho.length===0){
 alert("Carrinho vazio");
 return;
 }
 
+
+if(!confirm("Confirmar finalização da venda?")){
+  return;
+}
+ 
 let total=parseFloat(document.getElementById("total").innerText);
 let vendaId = Date.now();
 
@@ -927,38 +932,79 @@ atualizarClientes();
 return; // 🔥 PARA AQUI MESMO
 }
 
+
 // ============================
-// 🔥 VENDA NORMAL
+// 🔥 VENDA NORMAL (SUPABASE)
 // ============================
 
-carrinho.forEach(item=>{
-produtos[item.index].qtd -= item.qtd;
-});
+// 1️⃣ Calcular subtotal
+let subtotal = carrinho.reduce((acc, item) => {
+  return acc + (item.preco * item.qtd);
+}, 0);
 
-vendas.push({
-id: vendaId,
-data:new Date().toLocaleString(),
-total:total,
-tipo:"VENDA",
-itens:JSON.parse(JSON.stringify(carrinho)),
-desconto:descontoAtual,
-cliente:clienteNome.value||"Consumidor",
-pagamento:formaPagamento.value,
-parcelas:formaPagamento.value==="cartao"?parcelas.value:1
-});
+// 2️⃣ Inserir na tabela vendas
+const { data: vendaCriada, error: erroVenda } = await supabaseClient
+  .from("vendas")
+  .insert([{
+    cliente_id: null, // depois podemos vincular cliente
+    forma_pagamento: formaPagamento.value,
+    subtotal: subtotal,
+    desconto: descontoAtual,
+    total: total
+  }])
+  .select()
+  .single();
 
-localStorage.setItem("produtosJB",JSON.stringify(produtos));
-localStorage.setItem("vendasJB",JSON.stringify(vendas));
+if (erroVenda) {
+  console.error(erroVenda);
+  alert("Erro ao salvar venda!");
+  return;
+}
+
+const vendaIdBanco = vendaCriada.id;
+
+// 3️⃣ Inserir itens da venda
+for (let item of carrinho) {
+
+  const produto = produtos[item.index];
+
+  const { error: erroItem } = await supabaseClient
+    .from("itens_venda")
+    .insert([{
+      venda_id: vendaIdBanco,
+      produto_id: produto.id,
+      quantidade: item.qtd,
+      preco_unitario: item.preco
+    }]);
+
+  if (erroItem) {
+    console.error(erroItem);
+    alert("Erro ao salvar item da venda!");
+    return;
+  }
+
+  // 4️⃣ Atualizar estoque no banco
+  await supabaseClient
+    .from("produtos")
+    .update({
+      qtd: produto.qtd - item.qtd
+    })
+    .eq("id", produto.id);
+}
+
+// 5️⃣ Recarregar produtos do banco
+await carregarProdutos();
+ atualizarProdutos();
 
 imprimirCupom(total,"VENDA");
+
+alert("Venda finalizada com sucesso!");
 
 carrinho=[];
 descontoAtual=0;
 
 atualizarCarrinho();
-atualizarProdutos();
 atualizarClientes();
-}
 
 
 
@@ -2526,6 +2572,7 @@ atualizarClientes();
 
 
 </html>
+
 
 
 
