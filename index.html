@@ -614,9 +614,9 @@ async function addProduto() {
   const codigo = pCodigo.value.trim();
   const custo = parseFloat(pCusto.value);
   const venda = parseFloat(pVenda.value);
-  const quantidade = parseFloat(pQuantidade.value);
-  const minimo = parseFloat(pMinimo.value);
-
+  const quantidade = parseFloat(pQtd.value);
+  const minimo = parseFloat(pMin.value);
+ 
   if (!produto || !codigo || isNaN(custo) || isNaN(venda) || isNaN(quantidade)) {
     alert("Preencha todos os campos corretamente!");
     return;
@@ -691,10 +691,10 @@ return;
 prod.innerHTML="";
 produtos.forEach((p,i)=>{
 if(
-p.nome.toLowerCase().includes(termo) ||
+p.produto.toLowerCase().includes(termo) ||
 p.codigo.toLowerCase().includes(termo)
 ){
-prod.innerHTML+=`<option value="${i}">${p.nome}</option>`;
+prod.innerHTML+=`<option value="${i}">${p.produto}</option>`;
 }
 });
 }
@@ -753,7 +753,7 @@ async function excluirProduto(id) {
 function atualizarSelect(){
 prod.innerHTML="";
 produtos.forEach((p,i)=>{
-prod.innerHTML+=`<option value="${i}">${p.nome}</option>`;
+prod.innerHTML+=`<option value="${i}">${p.produto}</option>`;
 });
 }
 
@@ -761,14 +761,14 @@ function addItem(){
 const index=prod.value;
 const qtdVal=parseInt(qtd.value);
 
-if(produtos[index].qtd<qtdVal){
+if(produtos[index].quantidade < qtdVal){
 alert("Estoque insuficiente");
 return;
 }
 
 carrinho.push({
 index:index,
-nome:produtos[index].nome,
+nome:produtos[index].produto,
 preco:produtos[index].venda,
 qtd:qtdVal
 });
@@ -882,7 +882,7 @@ saldoApos: cliente.saldo
 });
 
 carrinho.forEach(item=>{
-produtos[item.index].qtd -= item.qtd;
+produtos[item.index].quantidade -= item.qtd;
 });
 
 localStorage.setItem("clientesJB", JSON.stringify(clientes));
@@ -1456,7 +1456,7 @@ tEstoque.innerHTML=`
 
 produtos.forEach(p=>{
 
-let baixo = p.qtd <= p.min;
+let baixo = p.quantidade <= p.minimo;
 
 let status = baixo ? "BAIXO" : "OK";
 
@@ -1480,10 +1480,10 @@ background:#1fa84f;
 
 tEstoque.innerHTML+=`
 <tr>
-<td>${p.nome}</td>
+<td>${p.produto}</td>
 
 <td style="text-align:center;">
-${p.qtd}
+${p.quantidade}
 </td>
 
 <td style="text-align:center; color:${corStatus}; font-weight:bold;">
