@@ -1395,6 +1395,8 @@ imprimirOrcamentoA4(orcamentoTemp);
 
 let empresa = JSON.parse(localStorage.getItem("configJB")) || {};
 
+let numeroFormatado = String(orc.numero || 0).padStart(4,'0');
+  
 let w = window.open("", "", "width=900,height=700");
 
 let html = `
@@ -2670,6 +2672,7 @@ atualizarClientes();
 
 </body>
 </html>
+
 
 
 
