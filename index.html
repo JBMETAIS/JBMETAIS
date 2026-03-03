@@ -513,7 +513,7 @@ R$ <span id="total">0.00</span>
 let produtos=JSON.parse(localStorage.getItem("produtosJB"))||[];
 let vendas=JSON.parse(localStorage.getItem("vendasJB"))||[];
 let config=JSON.parse(localStorage.getItem("configJB"))||{};
-let clientes = JSON.parse(localStorage.getItem("clientesJB")) || [];
+let clientes = [];
 let extratos = JSON.parse(localStorage.getItem("extratosJB")) || [];
 let numeroRecibo = parseInt(localStorage.getItem("numeroRecibo")) || 1;
 let clientePagamentoAtual = null;
@@ -1960,41 +1960,41 @@ document.getElementById("modalExtrato").style.display = "none";
 }
 
 
-function cadastrarCliente(){
+async function cadastrarCliente(){
 
-let nome = cNome.value.trim();
-let telefone = cTelefone.value.trim();
-let limite = parseFloat(cLimite.value) || 500;
+  let nome = cNome.value.trim();
+  let telefone = cTelefone.value.trim();
+  let limite = parseFloat(cLimite.value) || 500;
 
-if(!nome){
-alert("Digite o nome do cliente");
-return;
+  if(!nome){
+    alert("Digite o nome do cliente");
+    return;
+  }
+
+  const { error } = await supabaseClient
+    .from("clientes")
+    .insert([{
+      nome: nome,
+      telefone: telefone,
+      limite: limite
+    }]);
+
+  if(error){
+    console.error(error);
+    alert("Erro ao cadastrar cliente");
+    return;
+  }
+
+  alert("Cliente cadastrado com sucesso!");
+
+  cNome.value="";
+  cTelefone.value="";
+  cLimite.value=500;
+
+  carregarClientes(); // 🔥 atualiza direto do banco
 }
 
-if(clientes.find(c => c.nome.toLowerCase() === nome.toLowerCase())){
-alert("Cliente já cadastrado");
-return;
-}
-
-clientes.push({
-id: Date.now(),
-nome: nome,
-telefone: telefone,
-limite: limite,
-saldo: 0
-});
-
-localStorage.setItem("clientesJB", JSON.stringify(clientes));
-
-alert("Cliente cadastrado com sucesso!");
-
-cNome.value="";
-cTelefone.value="";
-cLimite.value=500;
-
-atualizarClientes();
-}
-
+ 
 function atualizarClientes(){
 
 tClientes.innerHTML=`
@@ -2191,67 +2191,106 @@ clientePagamentoAtual = null;
 
 
 
-function excluirCliente(nomeCliente){
+async function excluirCliente(nomeCliente){
 
-let cliente = clientes.find(c => c.nome === nomeCliente);
+  let cliente = clientes.find(c => c.nome === nomeCliente);
 
-if(!cliente){
-alert("Cliente não encontrado.");
-return;
+  if(!cliente){
+    alert("Cliente não encontrado.");
+    return;
+  }
+
+  if(!confirm("Deseja realmente excluir este cliente?")) return;
+
+  const { error } = await supabaseClient
+    .from("clientes")
+    .delete()
+    .eq("id", cliente.id);
+
+  if(error){
+    console.error(error);
+    alert("Erro ao excluir cliente");
+    return;
+  }
+
+  alert("Cliente excluído com sucesso!");
+
+  carregarClientes();
 }
 
-if(cliente.saldo > 0){
-alert("Não é possível excluir cliente com saldo em aberto.");
-return;
+ 
+
+async function editarCliente(nomeCliente){
+
+  let cliente = clientes.find(c => c.nome === nomeCliente);
+
+  if(!cliente){
+    alert("Cliente não encontrado.");
+    return;
+  }
+
+  let novoNome = prompt("Nome:", cliente.nome);
+  if(!novoNome) return;
+
+  let novoTelefone = prompt("Telefone:", cliente.telefone || "");
+  let novoLimite = prompt("Limite:", cliente.limite);
+
+  novoLimite = parseFloat(novoLimite);
+
+  if(isNaN(novoLimite)){
+    alert("Limite inválido.");
+    return;
+  }
+
+  const { error } = await supabaseClient
+    .from("clientes")
+    .update({
+      nome: novoNome,
+      telefone: novoTelefone,
+      limite: novoLimite
+    })
+    .eq("id", cliente.id);
+
+  if(error){
+    console.error(error);
+    alert("Erro ao atualizar cliente");
+    return;
+  }
+
+  alert("Cliente atualizado com sucesso!");
+
+  carregarClientes();
+}
+ 
+
+
+
+async function carregarClientes(){
+
+  const { data, error } = await supabaseClient
+    .from("clientes")
+    .select("*")
+    .order("nome", { ascending: true });
+
+  if(error){
+    console.error(error);
+    alert("Erro ao carregar clientes");
+    return;
+  }
+
+  clientes = data.map(c => ({
+    ...c,
+    saldo: 0 // depois vamos calcular via vendas
+  }));
+
+  atualizarClientes();
 }
 
-if(!confirm("Deseja realmente excluir este cliente?")) return;
-
-clientes = clientes.filter(c => c.nome !== nomeCliente);
-
-localStorage.setItem("clientesJB", JSON.stringify(clientes));
-
-alert("Cliente excluído com sucesso.");
-
-atualizarClientes();
-}
 
 
-function editarCliente(nomeCliente){
+ 
 
-let cliente = clientes.find(c => c.nome === nomeCliente);
-
-if(!cliente){
-alert("Cliente não encontrado.");
-return;
-}
-
-let novoNome = prompt("Nome:", cliente.nome);
-if(!novoNome) return;
-
-let novoTelefone = prompt("Telefone:", cliente.telefone || "");
-let novoLimite = prompt("Limite:", cliente.limite);
-
-novoLimite = parseFloat(novoLimite);
-
-if(isNaN(novoLimite)){
-alert("Limite inválido.");
-return;
-}
-
-// Atualiza dados
-cliente.nome = novoNome;
-cliente.telefone = novoTelefone;
-cliente.limite = novoLimite;
-
-// salva
-localStorage.setItem("clientesJB", JSON.stringify(clientes));
-
-alert("Cliente atualizado com sucesso!");
-
-atualizarClientes();
-}
-
+ 
 
 function reimprimirCupomVenda(venda){
 
@@ -2652,6 +2691,7 @@ window.onload=function(){
 carregarProdutos(); // 🔥 agora vem da nuvem
 preencherParcelas();
 atualizarClientes();
+carregarClientes();
 };
 
 </script>
@@ -2737,6 +2777,7 @@ atualizarClientes();
 
 </body>
 </html>
+
 
 
 
