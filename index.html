@@ -2404,7 +2404,7 @@ alert("Venda cancelada com sucesso!");
 
 
 function converterOrcamento(index){
-
+ 
 let orc = vendas[index];
 
 if(orc.tipo !== "ORCAMENTO") return;
@@ -2415,7 +2415,16 @@ if(!confirm("Editar orçamento?")) return;
 orcamentoEmEdicaoId = orc.id;
 
 // carrega itens no carrinho
-carrinho = JSON.parse(JSON.stringify(orc.itens));
+carrinho = orc.itens.map(item => {
+  let indexProduto = produtos.findIndex(p => p.id === item.produto_id);
+
+  return {
+    index: indexProduto,
+    nome: item.nome,
+    preco: item.preco,
+    qtd: item.qtd
+  };
+});
 descontoAtual = orc.desconto || 0;
 clienteNome.value = orc.cliente || "";
 formaPagamento.value = orc.pagamento || "";
@@ -2715,6 +2724,7 @@ atualizarClientes();
 
 </body>
 </html>
+
 
 
 
