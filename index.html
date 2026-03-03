@@ -1881,7 +1881,7 @@ async function verExtrato(clienteId){
   const { data, error } = await supabaseClient
     .from("vendas")
     .select("*")
-    .eq("cliente_id", clienteId)
+    
     .order("criado_em", { ascending: false });
 
   if(error){
@@ -1909,7 +1909,6 @@ async function verExtratoCompleto(clienteId) {
   const { data: vendasData, error: errVendas } = await supabaseClient
     .from("vendas")
     .select("*, itens_venda(*)")
-    .eq("cliente_id", clienteId)
     .order("created_at", { ascending: false });
 
   if (errVendas) {
@@ -1921,7 +1920,6 @@ async function verExtratoCompleto(clienteId) {
   const { data: pagamentosData, error: errPag } = await supabaseClient
     .from("pagamentos")
     .select("*")
-    .eq("cliente_id", clienteId)
     .order("criado_em", { ascending: false });
 
   if (errPag) {
@@ -2112,7 +2110,6 @@ async function reimprimirUltimaVenda(clienteId){
   const { data, error } = await supabaseClient
     .from("vendas")
     .select("*, itens_venda(*)")
-    .eq("cliente_id", clienteId)
     .order("criado_em", { ascending: false })
     .limit(1)
     .single();
@@ -2364,12 +2361,11 @@ async function carregarExtratoCompleto(clienteId){
   const { data: vendas } = await supabaseClient
     .from("vendas")
     .select("id, total, criado_em")
-    .eq("cliente_id", clienteId);
-
+    
   const { data: pagamentos } = await supabaseClient
     .from("pagamentos")
     .select("valor, criado_em")
-    .eq("cliente_id", clienteId);
+    
 
   const extrato = [
     ...vendas.map(v => ({ tipo: "Venda", valor: v.total, data: v.criado_em })),
@@ -2391,7 +2387,7 @@ async function carregarExtratoCompleto(clienteId){
   const { data: vendas, error: erroVendas } = await supabaseClient
     .from("vendas")
     .select("total")
-    .eq("cliente_id", clienteId);
+    
 
   if(erroVendas){
     console.error(erroVendas);
@@ -2402,7 +2398,7 @@ async function carregarExtratoCompleto(clienteId){
   const { data: pagamentos, error: erroPag } = await supabaseClient
     .from("pagamentos")
     .select("valor")
-    .eq("cliente_id", clienteId);
+    
 
   if(erroPag){
     console.error(erroPag);
@@ -2892,6 +2888,7 @@ carregarClientes();
 
 </body>
 </html>
+
 
 
 
