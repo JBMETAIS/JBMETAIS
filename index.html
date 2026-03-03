@@ -1880,7 +1880,7 @@ async function verExtrato(clienteId){
 
 const { data, error } = await supabaseClient
 .from("vendas")
-.select("*")
+.select()
 .eq("cliente_id", clienteId)
 .order("criado_em", { ascending: false });
 
@@ -2825,6 +2825,7 @@ carregarClientes();
 
 </body>
 </html>
+
 
 
 
