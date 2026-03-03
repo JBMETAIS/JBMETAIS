@@ -882,12 +882,6 @@ let total=parseFloat(document.getElementById("total").innerText);
 let vendaId = Date.now();
 
 
-let clienteNome = document.getElementById("clienteNome").value;
-let cliente = clientes.find(c => c.nome === clienteNome);
-let clienteId = cliente ? cliente.id : null;
-
-const permitido = await podeFinalizarVenda(clienteId, total);
-if(!permitido) return;
  
 // ============================
 // 🔥 SE FOR MARCAR NA CONTA
@@ -2898,6 +2892,7 @@ carregarClientes();
 
 </body>
 </html>
+
 
 
 
