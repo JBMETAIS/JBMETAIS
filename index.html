@@ -2305,10 +2305,7 @@ async function carregarClientes(){
     return;
   }
 
-  clientes = data.map(c => ({
-    ...c,
-    saldo: 0 // depois vamos calcular via vendas
-  }));
+  clientes = data; // 🔥 NÃO zera o saldo
 
   atualizarClientes();
 }
@@ -2878,6 +2875,7 @@ carregarClientes();
 
 </body>
 </html>
+
 
 
 
