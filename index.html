@@ -2523,77 +2523,56 @@ async function carregarExtratoCompleto(clienteId){
 
 function reimprimirCupomVenda(venda){
 
-let largura = 302;
-let w = window.open("", "", `width=${largura},height=600`);
+  let janela = window.open("", "", "width=300,height=600");
 
-let html = `
-<html>
-<head>
-<style>
-body{font-family:monospace;width:280px;margin:0;padding:10px;}
-.center{text-align:center;}
-hr{border-top:1px dashed #000;}
-table{width:100%;font-size:12px;}
-td{padding:2px 0;}
-</style>
-</head>
-<body>
+  if(!janela){
+    alert("Pop-up bloqueado! Permita pop-ups para imprimir.");
+    return;
+  }
 
-<div class="center">
-<strong>REIMPRESSÃO</strong><br>
-${config.nome || "JB SANTOS"}<br>
-CNPJ: ${config.cnpj || ""}<br>
-${config.endereco || ""}<br>
-${config.telefone || ""}<br>
-</div>
+  let html = `
+    <html>
+      <head>
+        <title>Cupom</title>
+        <style>
+          body { font-family: monospace; font-size: 12px; }
+          .center { text-align: center; }
+          hr { border-top: 1px dashed #000; }
+        </style>
+      </head>
+      <body>
+        <div class="center">
+          <h3>JNMETAIS</h3>
+        </div>
+        <hr>
+        Cliente: ${venda.cliente}<br>
+        Data: ${venda.data}
+        <hr>
+  `;
 
-<hr>
+  venda.itens.forEach(item => {
+    html += `
+      ${item.nome}<br>
+      ${item.qtd} x R$ ${item.preco.toFixed(2)}<br><br>
+    `;
+  });
 
-Cliente: ${venda.cliente}<br>
-Data: ${venda.data}<br>
+  html += `
+        <hr>
+        Total: R$ ${venda.total.toFixed(2)}<br>
+        Desconto: R$ ${venda.desconto.toFixed(2)}<br>
+        Pagamento: ${venda.pagamento}
+        <hr>
+      </body>
+    </html>
+  `;
 
-<hr>
-
-<table>
-<tr>
-<td><strong>Produto</strong></td>
-<td align="right"><strong>Total</strong></td>
-</tr>
-`;
-
-venda.itens.forEach(i=>{
-let sub = i.preco * i.qtd;
-
-html += `
-<tr>
-<td>${i.nome}<br>
-${i.qtd} x ${i.preco.toFixed(2)}</td>
-<td align="right">${sub.toFixed(2)}</td>
-</tr>
-`;
-});
-
-html += `
-</table>
-
-<hr>
-
-Desconto: ${(venda.desconto || 0).toFixed(2)}<br>
-<strong>TOTAL: ${venda.total.toFixed(2)}</strong><br>
-Forma Pagamento: ${venda.pagamento}
-
-<br><br>
-<div class="center">Obrigado pela preferência</div>
-
-</body>
-</html>
-`;
-
-w.document.write(html);
-w.document.close();
-w.print();
+  janela.document.write(html);
+  janela.document.close();
+  janela.print();
 }
 
+ 
 
 function verSaldoRapido() {
 
@@ -2994,5 +2973,6 @@ carregarClientes();
 
 </body>
 </html>
+
 
 
