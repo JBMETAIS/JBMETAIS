@@ -2701,8 +2701,11 @@ hr{border-top:1px dashed #000;}
 
 <div class="center">
 <strong>REIMPRESSÃO - PAGAMENTO</strong><br>
-Recibo Nº: ${String(pag.numeroRecibo).padStart(4,'0')}<br><br>
+Recibo Nº: ${String(pag.numeroRecibo || 0).padStart(4,'0')}<br><br>
 ${config.nome || "JB SANTOS"}<br>
+CNPJ: ${config.cnpj || ""}<br>
+${config.endereco || ""}<br>
+${config.telefone || ""}<br>
 </div>
 
 <hr>
@@ -2714,12 +2717,11 @@ Data: ${pag.data}<br>
 
 Forma de Pagamento: ${pag.pagamento}<br>
 Valor Pago: R$ ${pag.total.toFixed(2)}<br>
-Saldo Após Pagamento: R$ ${pag.saldoAposPagamento.toFixed(2)}<br>
 
 <hr>
 
 <div class="center">
-Comprovante de pagamento
+Obrigado pela preferência
 </div>
 
 </body>
@@ -2730,7 +2732,6 @@ w.document.write(html);
 w.document.close();
 w.print();
 }
-
 
 
 
@@ -2904,6 +2905,7 @@ carregarClientes();
 
 </body>
 </html>
+
 
 
 
