@@ -1904,19 +1904,86 @@ await carregarHistoricoDoBanco();
 
 
 
-function salvarConfig(){
+async function salvarConfig(){
 
-config={
-nome:confNome.value,
-cnpj:confCnpj.value,
-endereco:confEndereco.value,
-telefone:confTelefone.value
-};
+  const config = {
+    nome: confNome.value,
+    cnpj: confCnpj.value,
+    endereço: confEndereco.value, // ⚠️ sua coluna tem acento
+    telefone: confTelefone.value
+  };
 
-localStorage.setItem("configJB",JSON.stringify(config));
+  // Verifica se já existe empresa cadastrada
+  const { data: empresaExistente } = await supabaseClient
+    .from("empresa")
+    .select("*")
+    .limit(1)
+    .maybeSingle();
 
-alert("Salvo");
+  if(empresaExistente){
+
+    // 🔁 Atualiza
+    const { error } = await supabaseClient
+      .from("empresa")
+      .update(config)
+      .eq("id", empresaExistente.id);
+
+    if(error){
+      console.error(error);
+      alert("Erro ao atualizar configuração");
+      return;
+    }
+
+  } else {
+
+    // ➕ Insere
+    const { error } = await supabaseClient
+      .from("empresa")
+      .insert([config]);
+
+    if(error){
+      console.error(error);
+      alert("Erro ao salvar configuração");
+      return;
+    }
+  }
+
+  alert("Configuração salva no banco com sucesso!");
 }
+ let config = {};
+
+// Declaração da função
+async function carregarConfig() {
+  try {
+    const { data, error } = await supabaseClient
+      .from("empresa")
+      .select("*")
+      .limit(1)
+      .maybeSingle();
+
+    if (error) {
+      console.error("Erro ao buscar configuração:", error);
+      return;
+    }
+
+    if (data) {
+      config = data;
+
+      // Preenche os inputs somente se eles existirem
+      if (confNome) confNome.value = data.nome || "";
+      if (confCnpj) confCnpj.value = data.cnpj || "";
+      if (confEndereco) confEndereco.value = data.endereço || "";
+      if (confTelefone) confTelefone.value = data.telefone || "";
+    }
+  } catch (err) {
+    console.error("Erro inesperado:", err);
+  }
+}
+
+// ⚠️ Garante que só vai rodar depois que o DOM estiver pronto
+document.addEventListener("DOMContentLoaded", () => {
+  carregarConfig();
+});
 
 async function buscarOuCriarCliente(nome){
 
@@ -2542,12 +2609,11 @@ function reimprimirCupomVenda(venda){
       </head>
       <body>
         <div class="center">
-          <h3>JNMETAIS</h3>
-        </div>
-        <hr>
-        Cliente: ${venda.cliente}<br>
-        Data: ${venda.data}
-        <hr>
+         <h3>${config.nome || "JBSANTOS"}</h3>
+CNPJ: ${config.cnpj || ""}<br>
+${config.endereço || ""}<br>
+Tel: ${config.telefone || ""}<br>
+<hr>
   `;
 
   venda.itens.forEach(item => {
@@ -2973,6 +3039,7 @@ carregarClientes();
 
 </body>
 </html>
+
 
 
 
