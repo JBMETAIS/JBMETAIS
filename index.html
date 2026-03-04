@@ -891,49 +891,87 @@ if(formaPagamento.value === "conta"){
 let cliente = clientes.find(c => c.nome === clienteNome.value);
 
 if(!cliente){
-alert("Cliente não encontrado!");
-return;
+  alert("Cliente não encontrado!");
+  return;
 }
 
 let disponivel = cliente.limite - cliente.saldo;
 
 if(total > disponivel){
-alert(`⚠️ LIMITE INSUFICIENTE!
-
+  alert(`⚠️ LIMITE INSUFICIENTE!
 Disponível: R$ ${disponivel.toFixed(2)}
 Valor da venda: R$ ${total.toFixed(2)}`);
-return;
+  return;
 }
 
-cliente.saldo += total;
+// 🔥 1️⃣ Inserir venda no banco
+const { data: vendaCriada, error: erroVenda } = await supabaseClient
+  .from("vendas")
+  .insert([{
+    cliente_id: cliente.id,
+    forma_pagamento: "conta",
+    subtotal: total,
+    desconto: descontoAtual,
+    total: total,
+    tipo: "VENDA"
+  }])
+  .select()
+  .single();
 
-extratos.push({
-clienteId: cliente.id,
-vendaId: vendaId,
-data: new Date().toLocaleString(),
-descricao: "Compra no PDV",
-valor: total,
-saldoApos: cliente.saldo
-});
+if (erroVenda) {
+  console.error(erroVenda);
+  alert("Erro ao salvar venda na conta!");
+  return;
+}
 
-carrinho.forEach(item=>{
-produtos[item.index].quantidade -= item.qtd;
-});
+const vendaIdBanco = vendaCriada.id;
 
-localStorage.setItem("clientesJB", JSON.stringify(clientes));
-localStorage.setItem("extratosJB", JSON.stringify(extratos));
-localStorage.setItem("produtosJB", JSON.stringify(produtos));
+// 🔥 2️⃣ Inserir itens da venda
+for (let item of carrinho) {
+
+  const produto = produtos[item.index];
+
+  await supabaseClient
+    .from("itens_venda")
+    .insert([{
+      venda_id: vendaIdBanco,
+      produto_id: produto.id,
+      quantidade: item.qtd,
+      preco_unitario: item.preco
+    }]);
+
+  await supabaseClient
+    .from("produtos")
+    .update({
+      quantidade: produto.quantidade - item.qtd
+    })
+    .eq("id", produto.id);
+}
+
+// 🔥 3️⃣ Atualizar saldo do cliente no banco
+const novoSaldo = cliente.saldo + total;
+
+await supabaseClient
+  .from("clientes")
+  .update({
+    saldo: novoSaldo
+  })
+  .eq("id", cliente.id);
+
+cliente.saldo = novoSaldo;
+ 
+await carregarClientes();
+await carregarProdutos();
 
 alert("Venda marcada na conta com sucesso!");
 
-carrinho=[];
-descontoAtual=0;
+carrinho = [];
+descontoAtual = 0;
 
 atualizarCarrinho();
-atualizarProdutos();
 atualizarClientes();
 
-return; // 🔥 PARA AQUI MESMO
+return;
 }
 
 
@@ -955,6 +993,7 @@ const { data: vendaCriada, error: erroVenda } = await supabaseClient
     subtotal: subtotal,
     desconto: descontoAtual,
     total: total
+    tipo: "VENDA"
   }])
   .select()
   .single();
@@ -2825,6 +2864,7 @@ carregarClientes();
 
 </body>
 </html>
+
 
 
 
