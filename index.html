@@ -957,7 +957,6 @@ await supabaseClient
   .update({
     saldo: novoSaldo,
     disponivel: novoDisponivel
-    saldo: novoSaldo
   })
   .eq("id", cliente.id);
 
@@ -1944,10 +1943,10 @@ const { data, error } = await supabaseClient
 
 console.log("Resultado encontrado:", data);
 
+ const { data: vendasCliente } = await supabaseClient
   .from("vendas")
-  .select("id, total, created_at")
-  .eq("cliente_id", clienteId)
-  .order("created_at", { ascending: false });
+  .select("*")
+  .eq("cliente_id", clienteId);
  
 if(error){
 console.error(error);
@@ -2893,3 +2892,4 @@ carregarClientes();
 
 </body>
 </html>
+
