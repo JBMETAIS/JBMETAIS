@@ -1918,28 +1918,48 @@ localStorage.setItem("configJB",JSON.stringify(config));
 alert("Salvo");
 }
 
-function buscarOuCriarCliente(nome){
+async function buscarOuCriarCliente(nome){
 
 if(!nome || nome.trim()===""){
-alert("Digite o nome do cliente");
-return null;
+  alert("Digite o nome do cliente");
+  return null;
 }
 
-let cliente = clientes.find(c => c.nome.toLowerCase() === nome.toLowerCase());
+// 🔎 Buscar no banco primeiro
+const { data: existente, error: erroBusca } = await supabaseClient
+  .from("clientes")
+  .select("*")
+  .ilike("nome", nome)
+  .maybeSingle();
 
-if(!cliente){
-cliente = {
-id: Date.now(),
-nome: nome,
-limite: 500,
-saldo: 0
-};
-
-clientes.push(cliente);
-localStorage.setItem("clientesJB", JSON.stringify(clientes));
+if(erroBusca){
+  console.error(erroBusca);
+  alert("Erro ao buscar cliente");
+  return null;
 }
 
-return cliente;
+if(existente){
+  return existente;
+}
+
+// 🔥 Criar cliente no banco
+const { data: novoCliente, error: erroInsert } = await supabaseClient
+  .from("clientes")
+  .insert([{
+    nome: nome,
+    limite: 500,
+    saldo: 0
+  }])
+  .select()
+  .single();
+
+if(erroInsert){
+  console.error(erroInsert);
+  alert("Erro ao criar cliente");
+  return null;
+}
+
+return novoCliente;
 }
 
 
@@ -2905,6 +2925,7 @@ carregarClientes();
 
 </body>
 </html>
+
 
 
 
