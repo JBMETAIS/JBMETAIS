@@ -2154,12 +2154,12 @@ R$ ${disponivel.toFixed(2)}
 </div>
 
 <div class="tooltip">
-<button onclick="editarCliente('${cliente.id}')">Editar</button>
+<button class="btn-small" onclick="editarCliente('${c.id}')">✏️</button>
 <span class="tooltip-text">Editar Cliente</span>
 </div>
 
 <div class="tooltip">
-<button class="btn-small" onclick="reimprimirUltimaVenda('${c.nome}')">🖨</button>
+<button class="btn-small" onclick="reimprimirUltimaVenda('${c.id}')">🖨</button>
 <span class="tooltip-text">Reimprimir Última Venda</span>
 </div>
 
@@ -2169,7 +2169,7 @@ R$ ${disponivel.toFixed(2)}
 </div>
 
 <div class="tooltip">
-<button onclick="excluirCliente('${cliente.id}')" style="background:#c62828;color:white;">Excluir</button>
+<button class="btn-small" onclick="excluirCliente('${c.id}')" style="background:#c62828;color:white;">🗑</button>
 <span class="tooltip-text">Excluir Cliente</span>
 </div>
 
@@ -3010,6 +3010,7 @@ carregarClientes();
 
 </body>
 </html>
+
 
 
 
