@@ -878,81 +878,161 @@ atualizarCarrinho();
 
   
 
-async function finalizarVenda(tipoOperacao){
+async function finalizarVenda(tipoOperacao) {
 
-if(carrinho.length === 0){
-  alert("Carrinho vazio");
-  return;
-}
-
-if(!confirm(`Confirmar ${tipoOperacao === "VENDA" ? "venda" : "orçamento"}?`)){
-  return;
-}
-
-let total = parseFloat(document.getElementById("total").innerText);
-
-// 🔢 GERAR NÚMEROS
-let numeroVenda = null;
-let numeroOrcamento = null;
-
-if(tipoOperacao === "VENDA"){
-
-  numeroVenda = await gerarNumeroVenda();
-
-} else {
-
-  if(!numeroOrcamentoAtual){
-    numeroOrcamentoAtual = await gerarNumeroOrcamento();
-  }
-
-  numeroOrcamento = numeroOrcamentoAtual;
-}
-
-// ==================================================
-// 🔥 VENDA NA CONTA
-// ==================================================
-if(tipoOperacao === "VENDA" && formaPagamento.value === "conta"){
-
-  let cliente = clientes.find(c => c.nome === clienteNome.value);
-
-  if(!cliente){
-    alert("Cliente não encontrado!");
+  if (carrinho.length === 0) {
+    alert("Carrinho vazio");
     return;
   }
 
-  let disponivel = cliente.limite - cliente.saldo;
-
-  if(total > disponivel){
-    alert("Limite insuficiente!");
+  if (!confirm(`Confirmar ${tipoOperacao === "VENDA" ? "venda" : "orçamento"}?`)) {
     return;
   }
+
+  let total = parseFloat(document.getElementById("total").innerText);
+
+  // 🔢 GERAR NÚMEROS
+  let numeroVenda = null;
+  let numeroOrcamento = null;
+
+  if (tipoOperacao === "VENDA") {
+    numeroVenda = await gerarNumeroVenda();
+  } else {
+    if (!numeroOrcamentoAtual) {
+      numeroOrcamentoAtual = await gerarNumeroOrcamento();
+    }
+    numeroOrcamento = numeroOrcamentoAtual;
+  }
+
+  // ==================================================
+  // 🔥 VENDA NA CONTA
+  // ==================================================
+  if (tipoOperacao === "VENDA" && formaPagamento.value === "conta") {
+
+    let cliente = clientes.find(c => c.nome === clienteNome.value);
+
+    if (!cliente) {
+      alert("Cliente não encontrado!");
+      return;
+    }
+
+    let disponivel = cliente.limite - cliente.saldo;
+
+    if (total > disponivel) {
+      alert("Limite insuficiente!");
+      return;
+    }
+
+    const { data: vendaCriada, error: erroVenda } = await supabaseClient
+      .from("vendas")
+      .insert([{
+        numero_venda: numeroVenda,
+        numero_orcamento: null,
+        cliente_id: cliente.id,
+        forma_pagamento: "conta",
+        subtotal: total,
+        desconto: descontoAtual,
+        total: total,
+        tipo: "VENDA"
+      }])
+      .select()
+      .single();
+
+    if (erroVenda) {
+      console.error(erroVenda);
+      alert("Erro ao salvar venda!");
+      return;
+    }
+
+    const vendaIdBanco = vendaCriada.id;
+
+    // Inserir itens e atualizar estoque
+    for (let item of carrinho) {
+      const produto = produtos[item.index];
+
+      await supabaseClient.from("itens_venda").insert([{
+        venda_id: vendaIdBanco,
+        produto_id: produto.id,
+        quantidade: item.qtd,
+        preco_unitario: item.preco
+      }]);
+
+      await supabaseClient.from("produtos")
+        .update({ quantidade: produto.quantidade - item.qtd })
+        .eq("id", produto.id);
+    }
+
+    // Atualizar saldo do cliente
+    const novoSaldo = cliente.saldo + total;
+    const novoDisponivel = cliente.limite - novoSaldo;
+
+    await supabaseClient
+      .from("clientes")
+      .update({ saldo: novoSaldo, disponivel: novoDisponivel })
+      .eq("id", cliente.id);
+
+    cliente.saldo = novoSaldo;
+    cliente.disponivel = novoDisponivel;
+
+    // Inserir movimentação no extrato
+    await supabaseClient
+      .from("movimentacoes_clientes")
+      .insert([{
+        cliente_id: cliente.id,
+        data: new Date(),
+        descricao: "Venda no PDV",
+        valor: total,
+        tipo: "debito"
+      }]);
+
+    await carregarClientes();
+    await carregarProdutos();
+
+    alert("Venda na conta realizada com sucesso!");
+
+    // 🔥 LIMPA VARIÁVEIS
+    carrinho = [];
+    descontoAtual = 0;
+    numeroOrcamentoAtual = null;
+    orcamentoAtualId = null;
+    atualizarCarrinho();
+    atualizarClientes();
+    return;
+  }
+
+  // ==================================================
+  // 🔥 VENDA NORMAL OU ORÇAMENTO
+  // ==================================================
+  let subtotal = carrinho.reduce((acc, item) => acc + (item.preco * item.qtd), 0);
+  let cliente = clienteNome && clienteNome.value ? clientes.find(c => c.nome === clienteNome.value) : null;
 
   const { data: vendaCriada, error: erroVenda } = await supabaseClient
     .from("vendas")
     .insert([{
       numero_venda: numeroVenda,
-      numero_orcamento: null,
+      numero_orcamento: numeroOrcamento,
       cliente_id: cliente ? cliente.id : null,
-      forma_pagamento: "conta",
-      subtotal: total,
+      nome_do_cliente: clienteNome.value || "Consumidor",
+      telefone_do_cliente: "", // se tiver input, colocar aqui
+      forma_pagamento: tipoOperacao === "VENDA" ? formaPagamento.value : null,
+      subtotal,
       desconto: descontoAtual,
-      total: total,
-      tipo: "VENDA"
+      total,
+      tipo: tipoOperacao
     }])
     .select()
     .single();
 
   if (erroVenda) {
     console.error(erroVenda);
-    alert("Erro ao salvar venda!");
+    alert("Erro ao salvar!");
     return;
   }
 
   const vendaIdBanco = vendaCriada.id;
 
-  // Inserir itens e baixar estoque
+  // Inserir itens
   for (let item of carrinho) {
-
     const produto = produtos[item.index];
 
     await supabaseClient.from("itens_venda").insert([{
@@ -962,141 +1042,48 @@ if(tipoOperacao === "VENDA" && formaPagamento.value === "conta"){
       preco_unitario: item.preco
     }]);
 
-    await supabaseClient.from("produtos")
-      .update({ quantidade: produto.quantidade - item.qtd })
-      .eq("id", produto.id);
+    // Só baixa estoque se for VENDA
+    if (tipoOperacao === "VENDA") {
+      await supabaseClient.from("produtos")
+        .update({ quantidade: produto.quantidade - item.qtd })
+        .eq("id", produto.id);
+    }
   }
 
-  // Atualizar saldo do cliente
-  const novoSaldo = cliente.saldo + total;
-  const novoDisponivel = cliente.limite - novoSaldo;
-
-  await supabaseClient
-    .from("clientes")
-    .update({
-      saldo: novoSaldo,
-      disponivel: novoDisponivel
-    })
-    .eq("id", cliente.id);
-
-  cliente.saldo = novoSaldo;
-  cliente.disponivel = novoDisponivel;
-
-  // Inserir movimentação
-  await supabaseClient
-    .from("movimentacoes_clientes")
-    .insert([{
-      cliente_id: cliente.id,
-      data: new Date(),
-      descricao: "Venda no PDV",
-      valor: total,
-      tipo: "debito"
-    }]);
-
-  await carregarClientes();
   await carregarProdutos();
+  atualizarProdutos();
 
-  alert("Venda na conta realizada com sucesso!");
+  // ================================
+  // 🔹 IMPRIMIR CUPOM OU ORÇAMENTO
+  // ================================
+  if (tipoOperacao === "VENDA") {
+    imprimirCupom(total, "VENDA");
+    alert("Venda finalizada!");
+  } else {
+    const orcamentoCompleto = {
+      ...vendaCriada,
+      itens: [...carrinho],
+      numero: vendaCriada.numero_orcamento,
+      cliente: vendaCriada.nome_do_cliente,
+      telefone: vendaCriada.telefone_do_cliente,
+      pagamento: vendaCriada.forma_pagamento
+    };
 
-carrinho = [];
-descontoAtual = 0;
-numeroOrcamentoAtual = null;   // 👈 AQUI TAMBÉM
-orcamentoAtualId = null;       // 👈 AQUI TAMBÉM
-atualizarCarrinho();
-atualizarClientes();
+    imprimirOrcamentoA4(orcamentoCompleto);
+    alert("Orçamento gerado!");
+  }
 
-return;
-}
-
-// ==================================================
-// 🔥 VENDA NORMAL OU ORÇAMENTO
-// ==================================================
-
-let subtotal = carrinho.reduce((acc, item) => {
-  return acc + (item.preco * item.qtd);
-}, 0);
-
-let cliente = null;
-
-if(clienteNome && clienteNome.value){
-  cliente = clientes.find(c => c.nome === clienteNome.value);
+  // 🔥 LIMPA VARIÁVEIS SÓ DEPOIS DE IMPRIMIR
+  carrinho = [];
+  descontoAtual = 0;
+  numeroOrcamentoAtual = null;
+  orcamentoAtualId = null;
+  atualizarCarrinho();
+  await carregarProdutos();
+  await carregarHistoricoDoBanco();
 }
 
  
-const { data: vendaCriada, error: erroVenda } = await supabaseClient
-  .from("vendas")
-  .insert([{
-    numero_venda: numeroVenda,
-    numero_orcamento: numeroOrcamento,
-    cliente_id: cliente ? cliente.id : null,
-    nome_do_cliente: clienteNome.value || "Consumidor",
-    telefone_do_cliente: "", // coloque seu input aqui se tiver
-    forma_pagamento: formaPagamento.value || "Não informado",
-    subtotal,
-    desconto: descontoAtual,
-    total,
-    tipo: tipoOperacao
-  }])
-  .select()
-  .single();
-
-if (erroVenda) {
-  console.error(erroVenda);
-  alert("Erro ao salvar!");
-  return;
-}
-
-const vendaIdBanco = vendaCriada.id;
-
-// Inserir itens
-for (let item of carrinho) {
-
-  const produto = produtos[item.index];
-
-  await supabaseClient.from("itens_venda").insert([{
-    venda_id: vendaIdBanco,
-    produto_id: produto.id,
-    quantidade: item.qtd,
-    preco_unitario: item.preco
-  }]);
-
-  // Só baixa estoque se for VENDA
-  if(tipoOperacao === "VENDA"){
-    await supabaseClient.from("produtos")
-      .update({ quantidade: produto.quantidade - item.qtd })
-      .eq("id", produto.id);
-  }
-}
-
-await carregarProdutos();
-atualizarProdutos();
-
-if(tipoOperacao === "VENDA"){
-
-  imprimirCupom(total, "VENDA");
-  alert("Venda finalizada!");
-
-} else {
-
-  const orcamentoCompleto = {
-    ...vendaCriada,
-    itens: [...carrinho] // 👈 cópia segura
-  };
-
-  imprimirOrcamentoA4(orcamentoCompleto);
-  alert("Orçamento gerado!");
-}
-
-// 🔥 LIMPA SÓ DEPOIS DE IMPRIMIR
-carrinho = [];
-descontoAtual = 0;
-numeroOrcamentoAtual = null;   // 👈 AQUI
-orcamentoAtualId = null;       // 👈 AQUI
-atualizarCarrinho();
-await carregarProdutos();
-await carregarHistoricoDoBanco();
-}
-
  
 function imprimirCupom(total, tipo="VENDA", dadosVenda=null){
 
@@ -3161,6 +3148,7 @@ async function gerarNumeroOrcamento() {
 
 </body>
 </html>
+
 
 
 
