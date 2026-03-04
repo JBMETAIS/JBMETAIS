@@ -505,9 +505,9 @@ R$ <span id="total">0.00</span>
   );
 </script>
 
- 
 
- 
+
+
 <script>
 
 let produtos=JSON.parse(localStorage.getItem("produtosJB"))||[];
@@ -518,7 +518,7 @@ let extratos = JSON.parse(localStorage.getItem("extratosJB")) || [];
 let numeroRecibo = parseInt(localStorage.getItem("numeroRecibo")) || 1;
 let clientePagamentoAtual = null;
 let orcamentoEmEdicaoId = null;
- 
+
 let carrinho=[];
 let descontoAtual=0;
 
@@ -677,7 +677,7 @@ async function addProduto() {
 }
 
 
- 
+
  async function carregarProdutos() {
 
   const { data, error } = await supabaseClient
@@ -695,10 +695,10 @@ async function addProduto() {
 }
 
 
- 
 
 
- 
+
+
 function buscarProduto(){
 const termo = buscaProduto.value.toLowerCase().trim();
 
@@ -752,7 +752,7 @@ t.innerHTML += `
 
 });
 }
- 
+
 
 async function excluirProduto(index){
 
@@ -777,7 +777,7 @@ async function excluirProduto(index){
 }
 
 
- 
+
 function atualizarSelect(){
 prod.innerHTML="";
 produtos.forEach((p,i)=>{
@@ -877,12 +877,12 @@ return;
 if(!confirm("Confirmar finalização da venda?")){
   return;
 }
- 
+
 let total=parseFloat(document.getElementById("total").innerText);
 let vendaId = Date.now();
 
 
- 
+
 // ============================
 // 🔥 SE FOR MARCAR NA CONTA
 // ============================
@@ -959,7 +959,7 @@ await supabaseClient
   .eq("id", cliente.id);
 
 cliente.saldo = novoSaldo;
- 
+
 await carregarClientes();
 await carregarProdutos();
 
@@ -992,6 +992,7 @@ const { data: vendaCriada, error: erroVenda } = await supabaseClient
     forma_pagamento: formaPagamento.value,
     subtotal: subtotal,
     desconto: descontoAtual,
+    total: total
     total: total,
     tipo: "VENDA"
   }])
@@ -1171,13 +1172,13 @@ imprimirCupom(venda.total, "REIMPRESSÃO", venda);
 
 
 function reimprimirOrcamento(index){
- 
+
 let orc = vendas[index];
 
 let empresa = JSON.parse(localStorage.getItem("configJB")) || {};
 
 let numeroFormatado = String(orc.numero || 0).padStart(4,'0');
- 
+
 let w = window.open("", "", "width=900,height=700");
 
 let html = `
@@ -1353,7 +1354,7 @@ async function gerarOrcamento(){
 
   console.log("orcamentoEmEdicaoId:", orcamentoEmEdicaoId);
   console.log("Carrinho:", carrinho);
-  
+
   if(carrinho.length === 0){
     alert("Carrinho vazio");
     return;
@@ -1495,7 +1496,7 @@ async function gerarOrcamento(){
 let empresa = JSON.parse(localStorage.getItem("configJB")) || {};
 
 let numeroFormatado = String(orc.numero || 0).padStart(4,'0');
-  
+
 let w = window.open("", "", "width=900,height=700");
 
 let html = `
@@ -1656,7 +1657,7 @@ w.print();
 
 
 
- 
+
 
 function atualizarEstoque(){
 
@@ -1761,8 +1762,8 @@ vendas = data.map(v => ({
 
 atualizarHistorico();
 }
- 
- 
+
+
 
 function atualizarHistorico(){
 
@@ -1871,10 +1872,10 @@ alert("Venda excluída com sucesso!");
 
 await carregarHistoricoDoBanco();
 }
- 
 
 
- 
+
+
 function salvarConfig(){
 
 config={
@@ -1922,7 +1923,7 @@ const { data, error } = await supabaseClient
   .select("id, total, created_at")
   .eq("cliente_id", clienteId)
   .order("created_at", { ascending: false });
- 
+
 if(error){
 console.error(error);
 alert("Erro ao carregar extrato");
@@ -1967,7 +1968,7 @@ modal.style.display = "flex";
 }
 
 
- 
+
 
 function fecharExtrato(){
 document.getElementById("modalExtrato").style.display = "none";
@@ -2009,8 +2010,8 @@ async function cadastrarCliente(){
 }
 
 
- 
- 
+
+
 function atualizarClientes(){
 
 tClientes.innerHTML=`
@@ -2092,7 +2093,7 @@ async function reimprimirUltimaVenda(clienteId){
 
   imprimirVenda(data);
 }
- 
+
 
 function novaVendaCliente(nomeCliente){
 
@@ -2159,11 +2160,11 @@ async function registrarPagamento(clienteId, valor){
 }
 
 
- 
 
 
 
- 
+
+
 
 function confirmarPagamento(){
 
@@ -2253,7 +2254,7 @@ async function excluirCliente(clienteId){
   alert("Cliente excluído com sucesso");
 }
 
- 
+
 
 async function editarCliente(clienteId, novoNome, novoTelefone, novoLimite){
 
@@ -2274,7 +2275,7 @@ async function editarCliente(clienteId, novoNome, novoTelefone, novoLimite){
 
   alert("Cliente atualizado com sucesso");
 }
- 
+
 
 
 
@@ -2331,11 +2332,11 @@ async function carregarExtratoCompleto(clienteId){
   const { data: vendas } = await supabaseClient
     .from("vendas")
     .select("id, total, criado_em")
-    
+
   const { data: pagamentos } = await supabaseClient
     .from("pagamentos")
     .select("valor, criado_em")
-    
+
 
   const extrato = [
     ...vendas.map(v => ({ tipo: "Venda", valor: v.total, data: v.criado_em })),
@@ -2349,7 +2350,7 @@ async function carregarExtratoCompleto(clienteId){
 
 
 
- 
+
 
  async function calcularSaldoCliente(clienteId){
 
@@ -2357,7 +2358,7 @@ async function carregarExtratoCompleto(clienteId){
   const { data: vendas, error: erroVendas } = await supabaseClient
     .from("vendas")
     .select("total")
-    
+
 
   if(erroVendas){
     console.error(erroVendas);
@@ -2368,7 +2369,7 @@ async function carregarExtratoCompleto(clienteId){
   const { data: pagamentos, error: erroPag } = await supabaseClient
     .from("pagamentos")
     .select("valor")
-    
+
 
   if(erroPag){
     console.error(erroPag);
@@ -2386,9 +2387,9 @@ async function carregarExtratoCompleto(clienteId){
     saldo
   };
 }
- 
 
- 
+
+
 
 function reimprimirCupomVenda(venda){
 
@@ -2489,7 +2490,7 @@ infoCliente.innerHTML = `
 <b>Disponível:</b> R$ ${disponivel.toFixed(2)}
 `;
 }
- 
+
 
 function fecharSaldo(){
 infoCliente.style.display = "none";
@@ -2542,7 +2543,7 @@ alert("Venda cancelada com sucesso!");
 
 
 function converterOrcamento(index){
- 
+
 let orc = vendas[index];
 
 if(orc.tipo !== "ORCAMENTO") return;
@@ -2770,7 +2771,7 @@ async function testarSupabase() {
 
 testarSupabase();
 
- 
+
 
 
 window.onload=function(){
@@ -2864,5 +2865,3 @@ carregarClientes();
 
 </body>
 </html>
-
-
