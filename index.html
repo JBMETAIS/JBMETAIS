@@ -2053,7 +2053,7 @@ async function cadastrarCliente(){
   }])
   .select();
 
-console.log("DATA:", data);
+console.log("ID INSERIDO:", data[0].id);
 console.log("ERROR:", error);
 
   if(error){
@@ -2929,6 +2929,7 @@ carregarClientes();
 
 </body>
 </html>
+
 
 
 
