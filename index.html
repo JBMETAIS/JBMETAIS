@@ -1508,7 +1508,7 @@ async function gerarOrcamento(){
     subtotal: subtotal,
     parcelas: qtdParcelas,
     valorParcela: valorParc,
-    itens: carrinho.map(item => ({
+    itens: [...carrinho].map(item => ({
       nome: produtos[item.index].produto,
       qtd: item.qtd,
       preco: item.preco
@@ -3140,6 +3140,7 @@ async function gerarNumeroOrcamento() {
 
 </body>
 </html>
+
 
 
 
