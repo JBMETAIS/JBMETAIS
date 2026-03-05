@@ -1919,7 +1919,7 @@ await carregarHistoricoDoBanco();
 }
 
  
-</script>
+
 window.salvarConfig = async function() {
   const dados = {
     nome: confNome.value,
@@ -2723,8 +2723,6 @@ alert("Orçamento carregado para edição ✏️");
 
 function imprimirComprovantePagamento(cliente, valor, formaPagamento, numeroRecibo){
 
-let disponivel = cliente.limite - cliente.saldo;
-
 let largura = 302;
 let w = window.open("", "", `width=${largura},height=600`);
 
@@ -2746,30 +2744,13 @@ hr{border-top:1px dashed #000;}
 
 <div class="center">
 <strong>COMPROVANTE DE PAGAMENTO</strong><br>
-Recibo Nº: ${String(numeroRecibo).padStart(4,'0')}<br><br>
-${config.nome || "JB SANTOS"}<br>
-CNPJ: ${config.cnpj || ""}<br>
-${config.endereco || ""}<br>
-${config.telefone || ""}<br>
-</div>
-
+Recibo Nº: ${String(numeroRecibo).padStart(4,'0')}<br>
 <hr>
-
 Cliente: ${cliente.nome}<br>
-Data: ${new Date().toLocaleString()}<br>
-
-<hr>
-
-Forma de Pagamento: ${formaPagamento}<br>
 Valor Pago: R$ ${valor.toFixed(2)}<br>
-Saldo Após Pagamento: R$ ${cliente.saldo.toFixed(2)}<br>
-Limite Disponível: R$ ${disponivel.toFixed(2)}<br>
-
+Forma: ${formaPagamento}<br>
 <hr>
-
-<div class="center">
-Pagamento registrado com sucesso<br><br>
-Assinatura: ______________________
+Obrigado pela preferência
 </div>
 
 </body>
@@ -2780,7 +2761,6 @@ w.document.write(html);
 w.document.close();
 w.print();
 }
-
 
 
 function reimprimirComprovantePagamento(index){
@@ -3134,11 +3114,11 @@ async function gerarNumeroOrcamento() {
 
   return data.length > 0 ? data[0].numero_orcamento + 1 : 1;
 }
-
-  
+ 
 </script>
 </body>
 </html>
+
 
 
 
