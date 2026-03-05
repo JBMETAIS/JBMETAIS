@@ -556,18 +556,7 @@ calcularTroco();
 
 
 
-function verificarFormaPagamento(){
 
-let pagamento = formaPagamento.value;
-
-if(pagamento === "cartao"){
-    divParcelas.style.display = "block";
-}
-else{
-    divParcelas.style.display = "none";
-}
-
-}
 
 
 function calcularTroco(){
@@ -2233,7 +2222,7 @@ document.getElementById("abaVendas").click();
 clienteNome.value = nomeCliente;
 
 // já marca forma de pagamento como CONTA
-formaPagamento.value = "CONTA";
+formaPagamento.value = "conta";
 
 alert("Cliente selecionado para nova venda.");
 
@@ -2909,7 +2898,7 @@ carregarClientes();
     <input type="number" id="valorPagamento">
 
     <label>Forma de Pagamento:</label>
-<select id="formaPagamentoSelect" onchange="verificarFormaPagamento()">
+<select id="formaPagamentoSelect" onchange="verificarFormaPagamentoModal()">
   <option value="Dinheiro">Dinheiro</option>
   <option value="PIX">PIX</option>
   <option value="Cartão Débito">Cartão Débito</option>
@@ -3107,4 +3096,5 @@ async function gerarNumeroOrcamento() {
 
 </body>
 </html>
+
 
