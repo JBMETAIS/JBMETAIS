@@ -908,6 +908,8 @@ const { data: vendaCriada, error: erroVenda } = await supabaseClient
   .from("vendas")
   .insert([{
     cliente_id: cliente.id,
+    cliente_nome: cliente,
+    cliente_telefone: telefoneCliente,
     forma_pagamento: "conta",
     subtotal: total,
     desconto: descontoAtual,
@@ -1004,7 +1006,9 @@ let subtotal = carrinho.reduce((acc, item) => {
 const { data: vendaCriada, error: erroVenda } = await supabaseClient
   .from("vendas")
   .insert([{
-    cliente_id: null, // depois podemos vincular cliente
+    cliente_id: null, 
+    cliente_nome: cliente,
+    cliente_telefone: telefoneCliente,
     forma_pagamento: formaPagamento.value,
     subtotal: subtotal,
     desconto: descontoAtual,
@@ -1451,6 +1455,8 @@ async function gerarOrcamento(){
       .from("vendas")
       .insert([{
         cliente_id: null,
+        cliente_nome: cliente,
+        cliente_telefone: telefoneCliente,
         forma_pagamento: pagamento,
         subtotal: subtotal,
         desconto: descontoAtual,
@@ -3119,6 +3125,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
