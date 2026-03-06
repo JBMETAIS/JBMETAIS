@@ -908,8 +908,8 @@ const { data: vendaCriada, error: erroVenda } = await supabaseClient
   .from("vendas")
   .insert([{
     cliente_id: cliente.id,
-    cliente_nome: cliente,
-    cliente_telefone: telefoneCliente,
+    nome_do_cliente: cliente,
+    telefone_do_cliente: telefoneCliente,e,
     forma_pagamento: "conta",
     subtotal: total,
     desconto: descontoAtual,
@@ -1007,8 +1007,8 @@ const { data: vendaCriada, error: erroVenda } = await supabaseClient
   .from("vendas")
   .insert([{
     cliente_id: null, 
-    cliente_nome: cliente,
-    cliente_telefone: telefoneCliente,
+    nome_do_cliente: cliente,
+    telefone_do_cliente: telefoneCliente,
     forma_pagamento: formaPagamento.value,
     subtotal: subtotal,
     desconto: descontoAtual,
@@ -1425,7 +1425,9 @@ async function gerarOrcamento(){
   const { error: erroUpdate } = await supabaseClient
     .from("vendas")
     .update({
-      forma_pagamento: pagamento,
+     nome_do_cliente: cliente,
+     telefone_do_cliente: telefoneCliente, 
+     forma_pagamento: pagamento,
       subtotal: subtotal,
       desconto: descontoAtual,
       total: total
@@ -1455,8 +1457,8 @@ async function gerarOrcamento(){
       .from("vendas")
       .insert([{
         cliente_id: null,
-        cliente_nome: cliente,
-        cliente_telefone: telefoneCliente,
+        nome_do_cliente: cliente,
+        telefone_do_cliente: telefoneCliente,
         forma_pagamento: pagamento,
         subtotal: subtotal,
         desconto: descontoAtual,
@@ -3125,6 +3127,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
