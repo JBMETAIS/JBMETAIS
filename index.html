@@ -1176,7 +1176,8 @@ Data: ${dataVenda}<br>
 
 <table>
 <tr>
-<td><strong>Cod.  Produto</strong></td>
+<td><strong>Cod</strong></td>
+<td><strong>Produto</strong></td>
 <td align="right"><strong>Total</strong></td>
 </tr>
 `;
@@ -1186,8 +1187,8 @@ let sub = i.preco * i.qtd;
 
 html += `
 <tr>
-<td>${i.codigo || ""} ${i.nome}<br>
-${i.qtd} x ${i.preco.toFixed(2)}</td>
+<td>${i.codigo || ""}</td>
+<td>${i.nome}<br>${i.qtd} x ${i.preco.toFixed(2)}</td>
 <td align="right">${sub.toFixed(2)}</td>
 </tr>
 `;
@@ -3043,6 +3044,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
