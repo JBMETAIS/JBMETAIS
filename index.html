@@ -2540,12 +2540,12 @@ async function verSaldoRapido() {
     return;
   }
 
-  const { data, error } = await supabase
-    .from("clientes")
-    .select("saldo, telefone")
-    .ilike("nome", clienteNome)
-    .limit(1)
-    .single();
+ const { data, error } = await supabaseClient
+  .from("clientes")
+  .select("saldo, telefone")
+  .ilike("nome", clienteNome)
+  .limit(1)
+  .single();
 
   if (error || !data) {
     info.style.display = "block";
@@ -3024,6 +3024,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
