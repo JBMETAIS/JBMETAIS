@@ -957,6 +957,8 @@ const { data: vendaCriada, error: erroVenda } = await supabaseClient
   .select()
   .single();
 
+ console.log("VENDA CRIADA:", vendaCriada);
+ 
 if (erroVenda) {
   console.error(erroVenda);
   alert("Erro ao salvar venda na conta!");
@@ -1116,7 +1118,7 @@ function imprimirCupom(total, tipo="VENDA", dadosVenda=null){
 let largura = 302;
 let w = window.open("", "", `width=${largura},height=600`);
 
-let pagamento = dadosVenda ? dadosVenda.pagamento : formaPagamento.value;
+let pagamento = dadosVenda ? dadosVenda.forma_pagamento : formaPagamento.value;
 let parc = dadosVenda ? dadosVenda.parcelas : parcelas.value;
 let itens = [];
 
@@ -1140,7 +1142,9 @@ let numeroVenda = dadosVenda ? dadosVenda.numero_venda : "";
 let desconto = dadosVenda ? dadosVenda.desconto : descontoAtual;
 let valorRec = dadosVenda ? dadosVenda.valorRecebido : valorRecebido.value;
 let valorTroco = dadosVenda ? dadosVenda.troco : troco.value;
-let dataVenda = dadosVenda ? dadosVenda.created_at : new Date().toLocaleString();
+let dataVenda = dadosVenda
+  ? new Date(dadosVenda.created_at).toLocaleString("pt-BR")
+  : new Date().toLocaleString("pt-BR");
 
 let html = `
 <html>
@@ -3046,6 +3050,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
