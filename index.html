@@ -1117,7 +1117,21 @@ let w = window.open("", "", `width=${largura},height=600`);
 
 let pagamento = dadosVenda ? dadosVenda.pagamento : formaPagamento.value;
 let parc = dadosVenda ? dadosVenda.parcelas : parcelas.value;
-let itens = dadosVenda ? dadosVenda.itens : carrinho;
+let itens = [];
+
+if(dadosVenda){
+  itens = dadosVenda.itens.map(i => ({
+    nome: i.nome,
+    preco: i.preco_unitario ?? i.preco,
+    qtd: i.quantidade ?? i.qtd
+  }));
+}else{
+  itens = carrinho.map(i => ({
+    nome: i.nome,
+    preco: i.preco,
+    qtd: i.qtd
+  }));
+}
 let cliente = dadosVenda ? dadosVenda.cliente : clienteNome.value;
 let desconto = dadosVenda ? dadosVenda.desconto : descontoAtual;
 let valorRec = dadosVenda ? dadosVenda.valorRecebido : valorRecebido.value;
@@ -1181,7 +1195,7 @@ html += `
 
 <hr>
 
-Desconto: ${desconto.toFixed(2)}%<br>
+Desconto: R$ ${desconto.toFixed(2)}<br>
 TOTAL: ${total.toFixed(2)}<br>
 
 ${pagamento==="dinheiro" ? `
@@ -1191,7 +1205,7 @@ Troco: ${valorTroco || "R$ 0.00"}<br>
 
 ${pagamento === "cartao" ? `
 Parcelas: ${parc}x<br>
-Valor Parcela: R$ ${(total / parc).toFixed(2)}<br>
+Valor Parcela: R$ ${(total / (parc || 1)).toFixed(2)}<br>
 ` : ""}
 
 Forma Pagamento: ${
@@ -3024,6 +3038,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
