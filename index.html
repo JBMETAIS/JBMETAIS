@@ -1390,7 +1390,9 @@ Total: R$ ${orc.total.toFixed(2)}
 
 w.document.write(html);
 w.document.close();
-w.print();
+w.onload = function(){
+    w.print();
+  }
 }
 
 
@@ -1579,6 +1581,8 @@ const { data: empresa } = await supabaseClient
 .limit(1)
 .single();
 
+const emp = empresa || {};
+
 let numeroFormatado = String(orc.numero || "").replace("ORC-","");
 numeroFormatado = numeroFormatado.padStart(4,'0');
 
@@ -1670,9 +1674,9 @@ font-weight:bold;
 </div>
 
 <div style="flex:1;text-align:center;font-size:14px;">
-<b style="font-size:18px;">${empresa.nome || ""}</b><br>
-${empresa.endereco || ""}<br>
-Tel: ${empresa.telefone || ""}
+<b style="font-size:18px;">${emp.nome || ""}</b><br>
+${emp.endereco || ""}<br>
+Tel: ${emp.telefone || ""}
 </div>
 
 <div style="width:200px;text-align:right;">
@@ -1853,7 +1857,7 @@ vendas = data.map(v => ({
 
   id: v.id,
   numero: v.numero_orcamento || v.id,
-  data: new Date(v.criado_em).toLocaleString("pt-BR"),
+  data: new Date(v.created_at).toLocaleString("pt-BR"),
   total: v.total,
   tipo: v.tipo || "VENDA",
   cliente: v.nome_do_cliente || "Consumidor",
@@ -3166,6 +3170,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
