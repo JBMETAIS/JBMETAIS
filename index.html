@@ -1128,9 +1128,10 @@ if(dadosVenda){
   }));
 }else{
   itens = carrinho.map(i => ({
-    nome: i.nome,
-    preco: i.preco,
-    qtd: i.qtd
+  nome: i.nome,
+  codigo: i.codigo,
+  preco: i.preco,
+  qtd: i.qtd
   }));
 }
 let cliente = dadosVenda ? dadosVenda.cliente : clienteNome.value;
@@ -3041,6 +3042,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
