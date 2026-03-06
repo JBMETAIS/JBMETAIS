@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>PDV JB Santos</title>
+<title>SISTEMA JB Santos</title>
 <link rel="icon" type="image/png" href="iconejb.png">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -1410,7 +1410,7 @@ async function gerarOrcamento(){
   }
 
   numero = data.numero_orcamento;
-  orcamentoId = data.id;
+  let numeroFormatado = "ORC-" + String(numero).padStart(4,"0");
 
   // 🔥 Atualiza o orçamento
   const { error: erroUpdate } = await supabaseClient
@@ -3082,4 +3082,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
