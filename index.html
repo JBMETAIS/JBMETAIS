@@ -829,10 +829,11 @@ return;
 }
 
 carrinho.push({
-index:index,
-nome:produtos[index].produto,
-preco:produtos[index].venda,
-qtd:qtdVal
+  index:index,
+  nome:produtos[index].produto,
+  codigo:produtos[index].codigo,
+  preco:produtos[index].venda,
+  qtd:qtdVal
 });
 
 atualizarCarrinho();
@@ -1121,18 +1122,19 @@ let itens = [];
 
 if(dadosVenda){
   itens = dadosVenda.itens.map(i => ({
-  nome: i.produtos.produto,
-  codigo: i.produtos.codigo,
-  preco: i.preco_unitario,
-  qtd: i.quantidade
+    nome: i.produtos?.produto || i.nome,
+    codigo: i.produtos?.codigo || "",
+    preco: i.preco_unitario ?? i.preco,
+    qtd: i.quantidade ?? i.qtd
   }));
+}
 }else{
   itens = carrinho.map(i => ({
   nome: i.nome,
   codigo: i.codigo,
   preco: i.preco,
   qtd: i.qtd
-  }));
+}));
 }
 let cliente = dadosVenda ? dadosVenda.cliente : clienteNome.value;
 let desconto = dadosVenda ? dadosVenda.desconto : descontoAtual;
@@ -3042,6 +3044,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
