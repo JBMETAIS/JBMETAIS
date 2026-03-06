@@ -1121,9 +1121,10 @@ let itens = [];
 
 if(dadosVenda){
   itens = dadosVenda.itens.map(i => ({
-    nome: i.nome,
-    preco: i.preco_unitario ?? i.preco,
-    qtd: i.quantidade ?? i.qtd
+  nome: i.produtos.produto,
+  codigo: i.produtos.codigo,
+  preco: i.preco_unitario,
+  qtd: i.quantidade
   }));
 }else{
   itens = carrinho.map(i => ({
@@ -3040,6 +3041,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
