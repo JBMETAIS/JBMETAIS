@@ -1120,7 +1120,7 @@ let pagamento = dadosVenda ? dadosVenda.pagamento : formaPagamento.value;
 let parc = dadosVenda ? dadosVenda.parcelas : parcelas.value;
 let itens = [];
 
-if(dadosVenda){
+if(dadosVenda && dadosVenda.itens){
   itens = dadosVenda.itens.map(i => ({
     nome: i.produtos?.produto || i.nome,
     codigo: i.produtos?.codigo || "",
@@ -3046,4 +3046,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
