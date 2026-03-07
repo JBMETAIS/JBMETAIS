@@ -2690,11 +2690,6 @@ console.log("Tipo do registro:", orc.tipo);
     return;
   }
 
-  if(orc.tipo?.toUpperCase() !== "ORCAMENTO"){
-    alert("Este registro não é um orçamento.");
-    return;
-  }
-
   if(!confirm("Editar orçamento?")) return;
 
   orcamentoEmEdicaoId = orc.id;
@@ -3091,6 +3086,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
