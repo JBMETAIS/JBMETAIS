@@ -1139,6 +1139,9 @@ if(dadosVenda && dadosVenda.itens){
 }
 let cliente = dadosVenda ? dadosVenda.nome_do_cliente : clienteNome.value;
 let numeroVenda = dadosVenda ? dadosVenda.numero_venda : "";
+ let numeroFormatado = numeroVenda
+  ? "PED-" + String(numeroVenda).padStart(4, "0")
+  : "-";
 let desconto = dadosVenda ? dadosVenda.desconto : descontoAtual;
 let valorRec = dadosVenda ? dadosVenda.valorRecebido : valorRecebido.value;
 let valorTroco = dadosVenda ? dadosVenda.troco : troco.value;
@@ -1174,7 +1177,7 @@ ${config.telefone || ""}<br>
 
 <hr>
 
-PED: ${numeroVenda || "-"}<br>
+PED: ${numeroFormatado}<br>
 Cliente: ${cliente || "Consumidor"}<br>
 Data: ${dataVenda}<br>
 
@@ -3050,6 +3053,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
