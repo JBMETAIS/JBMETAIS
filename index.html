@@ -2674,42 +2674,48 @@ alert("Venda cancelada com sucesso!");
 
 
 function converterOrcamento(index){
+  console.log("Função converterOrcamento chamada!");
+  console.log("Index clicado:", index);
+  console.log("Venda selecionada:", vendas[index]);
 
-console.log("Index clicado:", index);
-  console.log("Vendas atual:", vendas);
- 
-let orc = vendas[index];
-console.log("Orçamento selecionado:", orc);
-if(orc.tipo !== "ORCAMENTO") return;
+  let orc = vendas[index];
+  if(!orc){
+    console.error("Orçamento não encontrado!");
+    return;
+  }
 
- console.log("Converter orçamento:", orc.id);
- 
-if(!confirm("Editar orçamento?")) return;
+  if(orc.tipo !== "ORCAMENTO"){
+    console.warn("Não é um orçamento!");
+    return;
+  }
 
-// 🔥 guarda o ID real do banco
-orcamentoEmEdicaoId = orc.id;
+  console.log("ID do orçamento:", orc.id);
 
-// carrega itens no carrinho
-carrinho = orc.itens.map(item => {
-  let indexProduto = produtos.findIndex(p => p.id === item.produto_id);
+  if(!confirm("Editar orçamento?")) return;
 
-  return {
-    index: indexProduto,
-    nome: item.nome,
-    preco: item.preco,
-    qtd: item.qtd
-  };
-});
-descontoAtual = orc.desconto || 0;
-clienteNome.value = orc.cliente || "";
-formaPagamento.value = orc.pagamento || "";
+  orcamentoEmEdicaoId = orc.id;
 
-show("pdv");
-atualizarCarrinho();
+  carrinho = orc.itens.map(item => {
+    let indexProduto = produtos.findIndex(p => p.id === item.produto_id);
+    return {
+      index: indexProduto,
+      nome: item.nome,
+      preco: item.preco,
+      qtd: item.qtd
+    };
+  });
 
-alert("Orçamento carregado para edição ✏️");
+  descontoAtual = orc.desconto || 0;
+  clienteNome.value = orc.nome_do_cliente || "";
+  formaPagamento.value = orc.forma_pagamento || "";
+
+  show("pdv");
+  atualizarCarrinho();
+
+  alert("Orçamento carregado para edição ✏️");
 }
 
+ 
 
 function imprimirComprovantePagamento(cliente, valor, formaPagamento, numeroRecibo){
 
@@ -3079,6 +3085,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
