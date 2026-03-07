@@ -1699,7 +1699,7 @@ produtos
 )
 .forEach(p=>{
 
-let baixo = p.quantidade <= p.min;
+let baixo = p.quantidade <= p.minimo;
 
 let status = baixo ? "BAIXO" : "OK";
 
@@ -3071,6 +3071,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
