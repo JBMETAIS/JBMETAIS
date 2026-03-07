@@ -740,6 +740,7 @@ async function addProduto() {
   produtos = data; // substitui o array local
   atualizarProdutos();
   atualizarSelect();
+  atualizarEstoque();
 }
 
 
@@ -755,7 +756,7 @@ atualizarSelect();
 return;
 }
 
-const indexExato = produtos.findIndex(p => p.codigo.toLowerCase() === termo);
+const indexExato = produtos.findIndex(p => (p.codigo || "").toLowerCase() === termo);
 
 if(indexExato !== -1){
 prod.value = indexExato;
@@ -1694,68 +1695,38 @@ atualizarEstoque();
 
 function atualizarEstoque(){
 
-let filtro = document.getElementById("pesquisaEstoque")?.value?.toLowerCase() || "";
+const t = document.getElementById("tEstoque");
 
-tEstoque.innerHTML=`
+t.innerHTML = `
 <tr>
-<th style="width:15%;">Codigo</th>
-<th style="width:40%;">Produto</th>
-<th style="width:15%; text-align:center;">Qtd</th>
-<th style="width:15%; text-align:center;">Status</th>
-<th style="width:15%; text-align:center;">Alarme</th>
+<th>Código</th>
+<th>Produto</th>
+<th>Qtd</th>
+<th>Status</th>
+<th>Alarme</th>
 </tr>`;
 
-atualizarEstoque();
- 
-produtos
-.filter(p => 
-  (p.produto || "").toLowerCase().includes(filtro) ||
-  (p.codigo || "").toLowerCase().includes(filtro)
-)
-.forEach(p=>{
+produtos.forEach(p=>{
 
 let baixo = p.quantidade <= p.minimo;
 
 let status = baixo ? "BAIXO" : "OK";
 
-let corStatus = baixo ? "#c62828" : "#1fa84f";
+let cor = baixo ? "#c62828" : "#1fa84f";
 
 let bolinha = baixo
-? `<span style="
-display:inline-block;
-width:20px;
-height:20px;
-border-radius:50%;
-background:#c62828;
-"></span>`
-: `<span style="
-display:inline-block;
-width:20px;
-height:20px;
-border-radius:50%;
-background:#1fa84f;
-"></span>`;
+? `<span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:#c62828;"></span>`
+: `<span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:#1fa84f;"></span>`;
 
-tEstoque.innerHTML+=`
+t.innerHTML += `
 <tr>
-
 <td>${p.codigo}</td>
-
 <td>${p.produto}</td>
-
-<td style="text-align:center;">
-${p.quantidade}
-</td>
-
-<td style="text-align:center; color:${corStatus}; font-weight:bold;">
-${status}
-</td>
-
-<td style="text-align:center;">
-${bolinha}
-</td>
-
+<td style="text-align:center;">${p.quantidade}</td>
+<td style="text-align:center;color:${cor};font-weight:bold;">${status}</td>
+<td style="text-align:center;">${bolinha}</td>
 </tr>`;
+
 });
 
 }
@@ -3086,6 +3057,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
