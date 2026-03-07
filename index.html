@@ -1846,8 +1846,8 @@ ${v.tipo === "ORCAMENTO" ? `
 
 ${v.tipo === "ORCAMENTO" ? `
 <div class="tooltip">
-<button class="btn-small green" onclick="converterOrcamento(${index})">
-  💰
+<button onclick="converterOrcamento('${v.id}')">
+💰 Converter
 </button>
 <span class="tooltip-text">Converter em venda</span>
 </div>
@@ -2676,36 +2676,48 @@ alert("Venda cancelada com sucesso!");
 
 
 
-function converterOrcamento(index){
+function converterOrcamento(id){
 
-let orc = vendas[index];
+let orc = vendas.find(v => v.id == id);
 
-if(orc.tipo !== "ORCAMENTO") return;
+if(!orc){
+alert("Orçamento não encontrado");
+return;
+}
+
+if(orc.tipo !== "ORCAMENTO"){
+alert("Este item não é um orçamento");
+return;
+}
 
 if(!confirm("Editar orçamento?")) return;
 
-// 🔥 guarda o ID real do banco
 orcamentoEmEdicaoId = orc.id;
 
-// carrega itens no carrinho
 carrinho = orc.itens.map(item => {
-  let indexProduto = produtos.findIndex(p => p.id === item.produto_id);
 
-  return {
-    index: indexProduto,
-    nome: item.nome,
-    preco: item.preco,
-    qtd: item.qtd
-  };
+let indexProduto = produtos.findIndex(p => p.id === item.produto_id);
+
+return {
+index: indexProduto,
+nome: item.nome,
+preco: item.preco,
+qtd: item.qtd
+};
+
 });
+
 descontoAtual = orc.desconto || 0;
-clienteNome.value = orc.cliente || "";
-formaPagamento.value = orc.pagamento || "";
+
+clienteNome.value = orc.nome_do_cliente || "";
+formaPagamento.value = orc.forma_pagamento || "";
 
 show("pdv");
+
 atualizarCarrinho();
 
 alert("Orçamento carregado para edição ✏️");
+
 }
  
 
@@ -3079,6 +3091,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
