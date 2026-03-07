@@ -1682,8 +1682,15 @@ w.onload = function(){
 
 
 
-let tEstoque = document.getElementById("tEstoque");
+let tEstoque;
 
+window.onload = function(){
+
+tEstoque = document.getElementById("tEstoque");
+
+atualizarEstoque();
+
+}
 
 function atualizarEstoque(){
 
@@ -3079,6 +3086,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
