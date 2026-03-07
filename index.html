@@ -2682,6 +2682,8 @@ let orc = vendas[index];
 
 if(orc.tipo !== "ORCAMENTO") return;
 
+ console.log("Converter orçamento:", orc.id);
+ 
 if(!confirm("Editar orçamento?")) return;
 
 // 🔥 guarda o ID real do banco
@@ -3077,6 +3079,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
