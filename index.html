@@ -2676,27 +2676,22 @@ alert("Venda cancelada com sucesso!");
 
 
 function converterOrcamento(index){
-  console.log("Função converterOrcamento chamada!");
   console.log("Index clicado:", index);
-  console.log("Venda selecionada:", vendas[index]);
 
+  // 🔄 pega o objeto atualizado do array
   let orc = vendas[index];
-  if(!orc){
-    console.error("Orçamento não encontrado!");
+
+  // verifica se existe e se ainda é orçamento
+  if(!orc || orc.numero_orcamento === null){
+    alert("Este orçamento não pode mais ser convertido.");
     return;
   }
-
-  if(orc.tipo !== "ORCAMENTO"){
-    console.warn("Não é um orçamento!");
-    return;
-  }
-
-  console.log("ID do orçamento:", orc.id);
 
   if(!confirm("Editar orçamento?")) return;
 
   orcamentoEmEdicaoId = orc.id;
 
+  // carrega itens no carrinho
   carrinho = orc.itens.map(item => {
     let indexProduto = produtos.findIndex(p => p.id === item.produto_id);
     return {
@@ -2716,6 +2711,7 @@ function converterOrcamento(index){
 
   alert("Orçamento carregado para edição ✏️");
 }
+ 
 
  
 
@@ -3087,6 +3083,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
