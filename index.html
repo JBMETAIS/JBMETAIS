@@ -1829,7 +1829,7 @@ ${valorFormatado}
 
 ${v.tipo === "VENDA" ? `
 <div class="tooltip">
-<button onclick="reimprimirVenda('${v.id}')">Reimprimir</button>
+<button class="btn-small" onclick="reimprimirVenda(${v.id})">🖨</button>
 <span class="tooltip-text">Reimprimir Venda</span>
 </div>
 ` : ""}
@@ -3051,6 +3051,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
