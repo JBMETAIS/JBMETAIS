@@ -2204,6 +2204,29 @@ R$ ${disponivel.toFixed(2)}
 });
 }
 
+
+
+async function reimprimirVenda(id){
+
+const { data: venda } = await supabaseClient
+.from("vendas")
+.select("*")
+.eq("id", id)
+.single();
+
+const { data: itens } = await supabaseClient
+.from("itens_venda")
+.select("*")
+.eq("venda_id", id);
+
+venda.itens = itens || [];
+
+reimprimirCupomVenda(venda);
+
+}
+
+
+ 
 async function reimprimirUltimaVenda(clienteId){
 
   const { data, error } = await supabaseClient
@@ -3051,6 +3074,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
