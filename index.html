@@ -1263,9 +1263,11 @@ imprimirCupom(venda.total, "REIMPRESSÃO", venda);
 }
 
 
-function reimprimirOrcamento(id){
+function reimprimirOrcamento(created_at){
 
-let orc = vendas.find(v => v.id === id);
+let orc = vendas.find(v => v.created_at === created_at);
+
+console.log(orc);
 
 imprimirOrcamentoA4(orc);
 
@@ -1807,7 +1809,7 @@ ${v.tipo === "VENDA" ? `
 
 ${v.tipo === "ORCAMENTO" ? `
 <div class="tooltip">
-<button class="btn-small" onclick="reimprimirOrcamento(${index})">🖨</button>
+<button class="btn-small" onclick="reimprimirOrcamento('${v.created_at}')">🖨</button>
 <span class="tooltip-text">Reimprimir Orçamento</span>
 </div>
 ` : ""}
@@ -3026,6 +3028,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
