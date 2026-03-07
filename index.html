@@ -1690,6 +1690,7 @@ let tEstoque;
 function atualizarEstoque(){
 
 const tabela = document.getElementById("tEstoque");
+const pesquisa = document.getElementById("pesquisaEstoque").value.toLowerCase();
 
 if(!tabela) return;
 
@@ -1703,7 +1704,12 @@ tabela.innerHTML = `
 </tr>
 `;
 
-produtos.forEach(p=>{
+produtos
+.filter(p => 
+(p.codigo || "").toLowerCase().includes(pesquisa) ||
+(p.produto || "").toLowerCase().includes(pesquisa)
+)
+.forEach(p=>{
 
 let baixo = Number(p.quantidade) <= Number(p.minimo);
 
@@ -3045,6 +3051,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
