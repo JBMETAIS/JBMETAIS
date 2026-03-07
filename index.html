@@ -1267,6 +1267,9 @@ function reimprimirOrcamento(index){
 
 let orc = vendas[index];
 
+orc.cliente = orc.cliente || orc.cliente_nome || "Consumidor";
+orc.pagamento = orc.pagamento || orc.forma_pagamento || "";
+
 imprimirOrcamentoA4(orc);
 
 }
@@ -3028,6 +3031,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
