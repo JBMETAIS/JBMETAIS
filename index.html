@@ -2681,6 +2681,9 @@ function converterOrcamento(index){
 
   let orc = vendas[index];
 
+ console.log("Objeto clicado:", orc);
+console.log("Tipo do registro:", orc.tipo);
+
   if(!orc){
     alert("Orçamento não encontrado.");
     return;
@@ -3087,6 +3090,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
