@@ -1263,11 +1263,14 @@ imprimirCupom(venda.total, "REIMPRESSÃO", venda);
 }
 
 
-function reimprimirOrcamento(created_at){
+function reimprimirOrcamento(id){
 
-let orc = vendas.find(v => v.created_at === created_at);
+let orc = vendas.find(v => v.id === id);
 
-console.log(orc);
+if(!orc){
+alert("Orçamento não encontrado");
+return;
+}
 
 imprimirOrcamentoA4(orc);
 
@@ -1475,7 +1478,8 @@ let pagamento =
   orc.forma_pagamento ||
   "";
 
-let numeroFormatado = String(orc.numero || "").replace("ORC-","");
+let numeroBase = orc.numero || orc.numero_orcamento || "";
+let numeroFormatado = String(numeroBase).replace("ORC-","");
 numeroFormatado = numeroFormatado.padStart(4,'0');
 
 let w = window.open("", "", "width=900,height=700");
@@ -1817,14 +1821,14 @@ ${valorFormatado}
 
 ${v.tipo === "VENDA" ? `
 <div class="tooltip">
-<button class="btn-small" onclick="reimprimirOrcamento(${v.id})"">🖨</button>
+<button class="btn-small" onclick="reimprimirOrcamento(${v.id})">🖨</button>
 <span class="tooltip-text">Reimprimir Venda</span>
 </div>
 ` : ""}
 
 ${v.tipo === "ORCAMENTO" ? `
 <div class="tooltip">
-<button class="btn-small" onclick="reimprimirOrcamento('${v.created_at}')">🖨</button>
+<button class="btn-small" onclick="reimprimirOrcamento(${v.id})">🖨</button>
 <span class="tooltip-text">Reimprimir Orçamento</span>
 </div>
 ` : ""}
@@ -3043,6 +3047,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
