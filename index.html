@@ -935,6 +935,14 @@ if(!confirm("Confirmar finalização da venda?")){
   return;
 }
 
+
+ // 1️⃣ Calcular subtotal
+ 
+let subtotal = carrinho.reduce((acc, item) => {
+  return acc + (item.preco * item.qtd);
+}, 0);
+
+ 
 let total=parseFloat(document.getElementById("total").innerText);
 let cliente = document.getElementById("clienteNome").value || "Consumidor";
 let telefoneCliente = document.getElementById("telefoneCliente")?.value || "";
@@ -1072,11 +1080,7 @@ return;
 // 🔥 VENDA NORMAL (SUPABASE)
 // ============================
 
-// 1️⃣ Calcular subtotal
- 
-let subtotal = carrinho.reduce((acc, item) => {
-  return acc + (item.preco * item.qtd);
-}, 0);
+
 
 // 2️⃣ Inserir na tabela vendas
 const { data: vendaCriada, error: erroVenda } = await supabaseClient
@@ -3189,6 +3193,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
