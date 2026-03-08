@@ -1145,8 +1145,10 @@ let w = window.open("", "", `width=${largura},height=600`);
 let pagamento = dadosVenda
  ? (dadosVenda.forma_pagamento || dadosVenda.pagamento)
  : formaPagamento.value;
-let parc = (dadosVenda ? dadosVenda.parcelas : parcelas.value) || 1;
-let itens = [];
+let parc = Number(dadosVenda ? (dadosVenda.parcelas || 1) : parcelas.value || 1);
+let valorParcela = total / parc;
+
+ let itens = [];
 
 if(dadosVenda && dadosVenda.itens){
 
@@ -1259,15 +1261,16 @@ html += `
 Desconto: R$ ${desconto.toFixed(2)}<br>
 TOTAL: ${total.toFixed(2)}<br>
 
-${pagamento==="dinheiro" ? `
-Valor Recebido: R$ ${Number(valorRec).toFixed(2)}<br>
-Troco: R$ ${Number(valorTroco).toFixed(2)}<br>
+${pagamento === "cartao" ? `
+Parcelas: ${parc}x<br>
+Valor Parcela: R$ ${valorParcela.toFixed(2)}<br>
 ` : ""}
 
 ${pagamento === "cartao" ? `
-Parcelas: ${(parc || 1)}x<br>
-Valor Parcela: R$ ${(total / (parc || 1)).toFixed(2)}<br>
+Parcelas: ${parc}x<br>
+Valor Parcela: R$ ${valorParcela.toFixed(2)}<br>
 ` : ""}
+`;
 
 Forma Pagamento: ${
 pagamento === "dinheiro" ? "Dinheiro" :
@@ -3135,6 +3138,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
