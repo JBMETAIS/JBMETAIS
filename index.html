@@ -935,7 +935,7 @@ if(!confirm("Confirmar finalização da venda?")){
 }
 
 // pegar forma de pagamento corretamente
-let formaPagamento = document.getElementById("formaPagamentoSelect").value;
+let formaPagamento = document.getElementById("formaPagamento").value;
 
 // 1️⃣ Calcular subtotal
 let subtotal = carrinho.reduce((acc, item) => {
@@ -1146,7 +1146,9 @@ vendaCriada.troco = troco;
 
 
 // imprimir cupom
-imprimirCupom(total,"VENDA", vendaCriada);
+if(formaPagamento !== "conta_cliente"){
+   imprimirCupom(total,"VENDA", vendaCriada);
+}
 
 alert("Venda finalizada com sucesso!");
 
@@ -3194,6 +3196,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
