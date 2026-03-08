@@ -928,7 +928,13 @@ let telefoneCliente = document.getElementById("telefoneCliente")?.value || "";
 let vendaId = Date.now();
 
 let valorRecebido = Number(document.getElementById("valorRecebido")?.value || 0);
-let troco = Number(document.getElementById("troco")?.value || 0);
+
+ let troco = 0;
+
+if(formaPagamento.value === "dinheiro"){
+troco = valorRecebido - total;
+if(troco < 0) troco = 0;
+}
 
 
 // ============================
@@ -3129,6 +3135,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
