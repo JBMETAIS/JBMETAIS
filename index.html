@@ -1078,6 +1078,9 @@ const { data: vendaCriada, error: erroVenda } = await supabaseClient
     total: total,
     valor_recebido: valorRecebido,
     troco: troco,
+   parcelas: formaPagamento.value === "cartao"
+ ? Number(parcelas.value) || 1
+ : 1,
     tipo: "VENDA"
 }])
   .select()
@@ -3138,4 +3141,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
