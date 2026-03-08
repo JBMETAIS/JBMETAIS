@@ -1426,6 +1426,7 @@ async function gerarOrcamento(){
         subtotal: subtotal,
         desconto: descontoAtual,
         total: total,
+        parcelas: pagamento === "cartao" ? Number(parcelas.value) || 1 : 1,
         tipo: "ORCAMENTO",
          numero_venda: null
       }])
@@ -1700,8 +1701,8 @@ html += `
 <div class="pagamento">
 <b>Forma de pagamento:</b> ${pagamento}<br>
 ${pagamento === "cartao" ? `
-<b>Parcelas:</b> ${orc.parcelas}x<br>
-<b>Valor por parcela:</b> ${orc.valorParcela}
+<b>Parcelas:</b> ${(orc.parcelas || 1)}x<br>
+<b>Valor por parcela:</b> R$ ${(Number(orc.valorParcela) || (total/(orc.parcelas||1))).toFixed(2)}
 ` : ""}
 </div>
 
@@ -3143,6 +3144,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
