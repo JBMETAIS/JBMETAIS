@@ -925,48 +925,45 @@ atualizarCarrinho();
 
 async function finalizarVenda(){
 
-if(carrinho.length===0){
-alert("Carrinho vazio");
-return;
+if(carrinho.length === 0){
+  alert("Carrinho vazio");
+  return;
 }
-
 
 if(!confirm("Confirmar finalização da venda?")){
   return;
 }
 
-
- // pegar forma de pagamento corretamente
+// pegar forma de pagamento corretamente
 let formaPagamento = document.getElementById("formaPagamentoSelect").value;
 
- // 1️⃣ Calcular subtotal
- 
+// 1️⃣ Calcular subtotal
 let subtotal = carrinho.reduce((acc, item) => {
   return acc + (item.preco * item.qtd);
 }, 0);
 
- 
-let total=parseFloat(document.getElementById("total").innerText);
-let cliente = document.getElementById("clienteNome").value || "Consumidor";
+let total = parseFloat(document.getElementById("total").innerText);
+
+let clienteNome = document.getElementById("clienteNome").value || "Consumidor";
 let telefoneCliente = document.getElementById("telefoneCliente")?.value || "";
-let vendaId = Date.now();
 
 let valorRecebido = Number(document.getElementById("valorRecebido")?.value || 0);
 
- let troco = 0;
+let troco = 0;
 
-if(formaPagamento.value === "dinheiro"){
-troco = valorRecebido - total;
-if(troco < 0) troco = 0;
+if(formaPagamento === "dinheiro"){
+  troco = valorRecebido - total;
+  if(troco < 0) troco = 0;
 }
 
 
 // ============================
 // 🔥 SE FOR MARCAR NA CONTA
 // ============================
-if(formaPagamento.value === "conta"){
 
-let cliente = clientes.find(c => c.nome === clienteNome.value);
+if(formaPagamento === "conta"){
+
+let cliente = clientes.find(c => c.nome === clienteNome);
 
 if(!cliente){
   alert("Cliente não encontrado!");
@@ -982,29 +979,26 @@ Valor da venda: R$ ${total.toFixed(2)}`);
   return;
 }
 
-// 🔥 1️⃣ Inserir venda no banco
+
+// 🔥 1️⃣ Inserir venda
 const { data: vendaCriada, error: erroVenda } = await supabaseClient
-  .from("vendas")
-  .insert([{
-  cliente_id: cliente.id, 
+.from("vendas")
+.insert([{
+  cliente_id: cliente.id,
   nome_do_cliente: cliente.nome,
   telefone_do_cliente: telefoneCliente,
-  forma_pagamento: formaPagamento.value,
+  forma_pagamento: "conta",
   subtotal: subtotal,
   desconto: descontoAtual,
   total: total,
-  valor_recebido: valorRecebido,
-  troco: troco,
-  parcelas: formaPagamento.value === "cartao"
- ? Number(parcelas.value) || 1
- : 1,
+  valor_recebido: 0,
+  troco: 0,
+  parcelas: 1,
   tipo: "VENDA"
 }])
-  .select()
-  .single();
+.select()
+.single();
 
- console.log("VENDA CRIADA:", vendaCriada);
- 
 if (erroVenda) {
   console.error(erroVenda);
   alert("Erro ao salvar venda na conta!");
@@ -1013,59 +1007,60 @@ if (erroVenda) {
 
 const vendaIdBanco = vendaCriada.id;
 
-// 🔥 2️⃣ Inserir itens da venda
+
+// 🔥 2️⃣ Inserir itens
 for (let item of carrinho) {
 
   const produto = produtos[item.index];
 
   await supabaseClient
-    .from("itens_venda")
-    .insert([{
-      venda_id: vendaIdBanco,
-      produto_id: produto.id,
-      quantidade: item.qtd,
-      preco_unitario: item.preco
-    }]);
+  .from("itens_venda")
+  .insert([{
+    venda_id: vendaIdBanco,
+    produto_id: produto.id,
+    quantidade: item.qtd,
+    preco_unitario: item.preco
+  }]);
 
   await supabaseClient
-    .from("produtos")
-    .update({
-      quantidade: produto.quantidade - item.qtd
-    })
-    .eq("id", produto.id);
+  .from("produtos")
+  .update({
+    quantidade: produto.quantidade - item.qtd
+  })
+  .eq("id", produto.id);
 }
 
-// 🔥 3️⃣ Atualizar saldo do cliente no banco
+
+// 🔥 3️⃣ Atualizar saldo
 const novoSaldo = cliente.saldo + total;
 const novoDisponivel = cliente.limite - novoSaldo;
 
 await supabaseClient
-  .from("clientes")
-  .update({
-    saldo: novoSaldo,
-    disponivel: novoDisponivel
-  })
-  .eq("id", cliente.id);
+.from("clientes")
+.update({
+  saldo: novoSaldo,
+  disponivel: novoDisponivel
+})
+.eq("id", cliente.id);
 
 cliente.saldo = novoSaldo;
 cliente.disponivel = novoDisponivel;
 
 
-// 🔥 4️⃣ INSERIR MOVIMENTAÇÃO NO EXTRATO
+// 🔥 4️⃣ Registrar extrato
 await supabaseClient
-  .from("movimentacoes_clientes")
-  .insert([{
-    cliente_id: cliente.id,
-    data: new Date(),
-    descricao: "Venda na conta",
-    valor: total,
-    tipo: "debito"
-  }]);
+.from("movimentacoes_clientes")
+.insert([{
+  cliente_id: cliente.id,
+  data: new Date(),
+  descricao: "Venda na conta",
+  valor: total,
+  tipo: "debito"
+}]);
 
- 
+
 await carregarClientes();
 await carregarProdutos();
- 
 
 alert("Venda marcada na conta com sucesso!");
 
@@ -1075,36 +1070,34 @@ descontoAtual = 0;
 atualizarCarrinho();
 atualizarClientes();
 
-return;
+return; // 🔥 impede impressão de cupom
 }
 
 
+
 // ============================
-// 🔥 VENDA NORMAL (SUPABASE)
+// 🔥 VENDA NORMAL
 // ============================
 
-
-
-// 2️⃣ Inserir na tabela vendas
 const { data: vendaCriada, error: erroVenda } = await supabaseClient
-  .from("vendas")
-  .insert([{
-    cliente_id: null, 
-    nome_do_cliente: cliente,
-    telefone_do_cliente: telefoneCliente,
-    forma_pagamento: formaPagamento.value,
-    subtotal: subtotal,
-    desconto: descontoAtual,
-    total: total,
-    valor_recebido: valorRecebido,
-    troco: troco,
-   parcelas: formaPagamento.value === "cartao"
- ? Number(parcelas.value) || 1
- : 1,
-    tipo: "VENDA"
+.from("vendas")
+.insert([{
+  cliente_id: null,
+  nome_do_cliente: clienteNome,
+  telefone_do_cliente: telefoneCliente,
+  forma_pagamento: formaPagamento,
+  subtotal: subtotal,
+  desconto: descontoAtual,
+  total: total,
+  valor_recebido: valorRecebido,
+  troco: troco,
+  parcelas: formaPagamento === "cartao"
+    ? Number(parcelas.value) || 1
+    : 1,
+  tipo: "VENDA"
 }])
-  .select()
-  .single();
+.select()
+.single();
 
 if (erroVenda) {
   console.error(erroVenda);
@@ -1114,19 +1107,20 @@ if (erroVenda) {
 
 const vendaIdBanco = vendaCriada.id;
 
-// 3️⃣ Inserir itens da venda
+
+// inserir itens
 for (let item of carrinho) {
 
   const produto = produtos[item.index];
 
   const { error: erroItem } = await supabaseClient
-    .from("itens_venda")
-    .insert([{
-      venda_id: vendaIdBanco,
-      produto_id: produto.id,
-      quantidade: item.qtd,
-      preco_unitario: item.preco
-    }]);
+  .from("itens_venda")
+  .insert([{
+    venda_id: vendaIdBanco,
+    produto_id: produto.id,
+    quantidade: item.qtd,
+    preco_unitario: item.preco
+  }]);
 
   if (erroItem) {
     console.error(erroItem);
@@ -1134,8 +1128,7 @@ for (let item of carrinho) {
     return;
   }
 
-  // 4️⃣ Atualizar estoque no banco
- await supabaseClient
+  await supabaseClient
   .from("produtos")
   .update({
     quantidade: produto.quantidade - item.qtd
@@ -1143,25 +1136,30 @@ for (let item of carrinho) {
   .eq("id", produto.id);
 }
 
-// 5️⃣ Recarregar produtos do banco
+
+// atualizar estoque
 await carregarProdutos();
- atualizarProdutos();
+atualizarProdutos();
 
 vendaCriada.valorRecebido = valorRecebido;
 vendaCriada.troco = troco;
- 
+
+
+// imprimir cupom
 imprimirCupom(total,"VENDA", vendaCriada);
 
 alert("Venda finalizada com sucesso!");
 
-carrinho=[];
-descontoAtual=0;
+carrinho = [];
+descontoAtual = 0;
 
 atualizarCarrinho();
 atualizarClientes();
- await carregarHistoricoDoBanco();
+
+await carregarHistoricoDoBanco();
 }
 
+ 
 
 function imprimirCupom(total, tipo="VENDA", dadosVenda=null){
 
@@ -3196,6 +3194,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
