@@ -971,6 +971,9 @@ const { data: vendaCriada, error: erroVenda } = await supabaseClient
   total: total,
   valor_recebido: valorRecebido,
   troco: troco,
+  parcelas: formaPagamento.value === "cartao"
+ ? Number(parcelas.value) || 1
+ : 1,
   tipo: "VENDA"
 }])
   .select()
@@ -1145,7 +1148,7 @@ let w = window.open("", "", `width=${largura},height=600`);
 let pagamento = dadosVenda
  ? (dadosVenda.forma_pagamento || dadosVenda.pagamento)
  : formaPagamento.value;
-let parc = (dadosVenda ? dadosVenda.parcelas : parcelas.value) || 1;
+let parc = Number(dadosVenda ? dadosVenda.parcelas : parcelas.value) || 1;
 let itens = [];
 
 if(dadosVenda && dadosVenda.itens){
@@ -1266,7 +1269,7 @@ Troco: R$ ${Number(valorTroco).toFixed(2)}<br>
 
 ${pagamento === "cartao" ? `
 Parcelas: ${(parc || 1)}x<br>
-Valor Parcela: R$ ${(total / (parc || 1)).toFixed(2)}<br>
+Valor Parcela: R$ ${(Number(total) / (parc || 1)).toFixed(2)}<br>
 ` : ""}
 
 Forma Pagamento: ${
@@ -3135,3 +3138,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
