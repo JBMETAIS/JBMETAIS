@@ -1139,7 +1139,8 @@ itens = dadosVenda.itens.map(i => ({
   preco: Number(i.preco_unitario ?? i.preco ?? 0),
   qtd: Number(i.quantidade ?? i.qtd ?? 1)
 }));
-}else{
+
+ else{
   itens = carrinho.map(i => ({
   nome: i.nome,
   codigo: i.codigo,
@@ -3115,6 +3116,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
