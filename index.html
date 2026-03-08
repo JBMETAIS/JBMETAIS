@@ -1067,8 +1067,10 @@ const { data: vendaCriada, error: erroVenda } = await supabaseClient
     subtotal: subtotal,
     desconto: descontoAtual,
     total: total,
+    valor_recebido: valorRecebido,
+    troco: troco,
     tipo: "VENDA"
-  }])
+}])
   .select()
   .single();
 
@@ -3127,6 +3129,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
