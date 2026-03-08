@@ -2421,14 +2421,22 @@ setTimeout(() => {
 
 
 
-async function registrarPagamento(clienteId, valor){
+async function registrarPagamento(cliente, valor, formaPagamento){
 
-  const { error } = await supabaseClient
+  let saldoApos = cliente.saldo;
+  let limiteDisponivel = cliente.limite - saldoApos;
+
+  const { data, error } = await supabaseClient
     .from("pagamentos")
     .insert([{
-      cliente_id: clienteId,
-      valor: valor
-    }]);
+      cliente_id: cliente.id,
+      valor: valor,
+      forma_pagamento: formaPagamento,
+      saldo_apos: saldoApos,
+      limite_apos: limiteDisponivel
+    }])
+    .select()
+    .single();
 
   if(error){
     console.error(error);
@@ -2437,11 +2445,43 @@ async function registrarPagamento(clienteId, valor){
   }
 
   alert("Pagamento registrado com sucesso");
+
+  imprimirComprovantePagamento(
+    cliente,
+    valor,
+    formaPagamento,
+    data.id
+  );
+
 }
 
+ 
 
+async function gerarComprovante(pagamento){
 
+const cliente = document.getElementById("clienteNome").innerText
 
+const dataFormatada = new Date(pagamento.criado_em)
+.toLocaleString("pt-BR")
+
+document.getElementById("reciboNumero").innerText =
+pagamento.id.slice(0,8)
+
+document.getElementById("clienteNome").innerText = cliente
+
+document.getElementById("dataPagamento").innerText =
+dataFormatada
+
+document.getElementById("formaPagamento").innerText =
+pagamento.forma_pagamento
+
+document.getElementById("valorPago").innerText =
+"R$ " + pagamento.valor.toFixed(2)
+
+window.print()
+
+}
+ 
 
 
 
@@ -2822,9 +2862,12 @@ alert("Orçamento carregado para edição ✏️");
 
  
 
-function imprimirComprovantePagamento(cliente, valor, formaPagamento, numeroRecibo){
+function imprimirComprovantePagamento(cliente, valor, formaPagamento, numeroRecibo, reimpressao=false)
 
-let disponivel = cliente.limite - cliente.saldo;
+let saldoApos = cliente.saldo;
+let disponivel = cliente.limite - saldoApos;
+
+let recibo = String(numeroRecibo).substring(0,8).toUpperCase();
 
 let largura = 302;
 let w = window.open("", "", `width=${largura},height=600`);
@@ -2838,6 +2881,7 @@ font-family:monospace;
 width:280px;
 margin:0;
 padding:10px;
+font-size:12px;
 }
 .center{text-align:center;}
 hr{border-top:1px dashed #000;}
@@ -2846,8 +2890,9 @@ hr{border-top:1px dashed #000;}
 <body>
 
 <div class="center">
+${reimpressao ? "<strong>REIMPRESSÃO</strong><br>" : ""}
 <strong>COMPROVANTE DE PAGAMENTO</strong><br>
-Recibo Nº: ${String(numeroRecibo).padStart(4,'0')}<br><br>
+Recibo Nº: ${recibo}<br><br>
 ${config.nome || "JB SANTOS"}<br>
 CNPJ: ${config.cnpj || ""}<br>
 ${config.endereco || ""}<br>
@@ -2857,13 +2902,20 @@ ${config.telefone || ""}<br>
 <hr>
 
 Cliente: ${cliente.nome}<br>
-Data: ${new Date().toLocaleString()}<br>
+Data: ${new Date().toLocaleString("pt-BR")}<br>
 
 <hr>
 
 Forma de Pagamento: ${formaPagamento}<br>
 Valor Pago: R$ ${valor.toFixed(2)}<br>
-Saldo Após Pagamento: R$ ${cliente.saldo.toFixed(2)}<br>
+
+<br>
+
+Referente a pagamento de conta em aberto.
+
+<hr>
+
+Saldo Após Pagamento: R$ ${saldoApos.toFixed(2)}<br>
 Limite Disponível: R$ ${disponivel.toFixed(2)}<br>
 
 <hr>
@@ -2888,59 +2940,19 @@ function reimprimirComprovantePagamento(index){
 
 let pag = vendas[index];
 
-let largura = 302;
-let w = window.open("", "", `width=${largura},height=600`);
+let cliente = {
+  nome: pag.cliente,
+  saldo: pag.saldo,
+  limite: pag.limite
+};
 
-let html = `
-<html>
-<head>
-<style>
-body{
-font-family:monospace;
-width:280px;
-margin:0;
-padding:10px;
+let valor = pag.total;
+let formaPagamento = pag.pagamento;
+let numeroRecibo = pag.numeroRecibo;
+
+imprimirComprovantePagamento(cliente, valor, formaPagamento, numeroRecibo);
+
 }
-.center{text-align:center;}
-hr{border-top:1px dashed #000;}
-</style>
-</head>
-<body>
-
-<div class="center">
-<strong>REIMPRESSÃO - PAGAMENTO</strong><br>
-Recibo Nº: ${String(pag.numeroRecibo || 0).padStart(4,'0')}<br><br>
-${config.nome || "JB SANTOS"}<br>
-CNPJ: ${config.cnpj || ""}<br>
-${config.endereco || ""}<br>
-${config.telefone || ""}<br>
-</div>
-
-<hr>
-
-Cliente: ${pag.cliente}<br>
-Data: ${pag.data}<br>
-
-<hr>
-
-Forma de Pagamento: ${pag.pagamento}<br>
-Valor Pago: R$ ${pag.total.toFixed(2)}<br>
-
-<hr>
-
-<div class="center">
-Obrigado pela preferência
-</div>
-
-</body>
-</html>
-`;
-
-w.document.write(html);
-w.document.close();
-w.print();
-}
-
 
 
 function verificarFormaPagamentoModal(){
@@ -3190,6 +3202,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
