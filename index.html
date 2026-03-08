@@ -1136,7 +1136,7 @@ let itens = [];
 if(dadosVenda && dadosVenda.itens){
   itens = dadosVenda.itens.map(i => ({
     nome: i.produtos?.produto || i.nome,
-    codigo: i.produtos?.codigo || "",
+    codigo: i.produtos?.codigo || i.codigo || i.produto_id || "",
     preco: i.preco_unitario ?? i.preco,
     qtd: i.quantidade ?? i.qtd
   }));
@@ -1158,8 +1158,16 @@ let numeroVenda = dadosVenda
  ? "PEDIDO-" + String(numeroVenda).padStart(4, "0")
   : "-";
 let desconto = dadosVenda ? dadosVenda.desconto : descontoAtual;
-let valorRec = dadosVenda ? dadosVenda.valorRecebido : valorRecebido.value;
-let valorTroco = dadosVenda ? dadosVenda.troco : troco.value;
+desconto = Number(desconto || 0);
+ 
+let valorRec = dadosVenda
+ ? (dadosVenda.valorRecebido || dadosVenda.valor_recebido || 0)
+ : valorRecebido.value;
+
+let valorTroco = dadosVenda
+ ? (dadosVenda.troco || 0)
+ : troco.value;
+ 
 let dataVenda = dadosVenda
  ? new Date(dadosVenda.created_at || dadosVenda.data).toLocaleString("pt-BR")
  : new Date().toLocaleString("pt-BR");
@@ -1213,7 +1221,7 @@ let sub = i.preco * i.qtd;
 
 html += `
 <tr>
-<td>${i.codigo || ""}</td>
+<td>${i.codigo || "-"}</td>
 <td>${i.nome}<br>${i.qtd} x ${i.preco.toFixed(2)}</td>
 <td align="right">${sub.toFixed(2)}</td>
 </tr>
@@ -1229,8 +1237,8 @@ Desconto: R$ ${desconto.toFixed(2)}<br>
 TOTAL: ${total.toFixed(2)}<br>
 
 ${pagamento==="dinheiro" ? `
-Valor Recebido: ${valorRec || "0.00"}<br>
-Troco: ${valorTroco || "R$ 0.00"}<br>
+Valor Recebido: R$ ${Number(valorRec).toFixed(2)}<br>
+Troco: R$ ${Number(valorTroco).toFixed(2)}<br>
 ` : ""}
 
 ${pagamento === "cartao" ? `
@@ -1472,8 +1480,8 @@ const { data: empresa } = await supabaseClient
 const emp = empresa || {};
 
 
-
-let dataOrc = orc.data || orc.created_at || new Date();
+let dataBase = orc.data || orc.created_at || orc.data_venda || Date.now();
+let dataOrc = new Date(dataBase).toLocaleDateString("pt-BR");
 dataOrc = new Date(dataOrc).toLocaleDateString();
 
   
@@ -3104,6 +3112,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
