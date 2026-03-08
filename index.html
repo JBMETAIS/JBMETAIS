@@ -1831,6 +1831,9 @@ vendas = data.map(v => ({
 
   forma_pagamento: v.forma_pagamento,
 
+  parcelas: v.parcelas || 1,
+  valor_parcela: v.valor_parcela || null,
+
   desconto: v.desconto || 0,
   subtotal: v.subtotal || 0,
 
@@ -3147,6 +3150,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
