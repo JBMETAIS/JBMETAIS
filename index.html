@@ -1369,7 +1369,10 @@ async function gerarOrcamento(){
 
   console.log("Telefone digitado:", telefoneCliente);
  
-  let pagamento = formaPagamento.value || "Não informado";
+  let pagamento = document.getElementById("formaPagamento")?.value || "Não informado";
+  
+  let parcelas = document.getElementById("parcelas");
+ 
   let qtdParcelas = Number(parcelas.value) || 1;
 
 if(pagamento === "cartao"){
@@ -3196,6 +3199,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
