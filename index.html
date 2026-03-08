@@ -2507,41 +2507,26 @@ async function confirmarPagamento(){
     return;
   }
 
-  // 🔹 INSERE USANDO SUA ESTRUTURA REAL
- 
- let formaPagamento = document.getElementById("formaPagamentoSelect").value;
+  let formaPagamento = document.getElementById("formaPagamentoSelect").value;
 
-await registrarPagamento(cliente, valor, formaPagamento);
-
-  if(error){
-    console.error(error);
-    alert(error.message);
-    return;
-  }
-
-  // 🔹 ATUALIZA SALDO NO BANCO
-  const novoSaldo = cliente.saldo - valor;
-
-  await supabaseClient
-    .from("clientes")
-    .update({ saldo: novoSaldo })
-    .eq("id", cliente.id);
+  await registrarPagamento(cliente, valor, formaPagamento);
 
   alert("Pagamento registrado com sucesso!");
 
   fecharModalPagamento();
   await carregarClientes();
 }
+ 
 
 
 function fecharModalPagamento(){
 document.getElementById("modalPagamento").style.display = "none";
 clientePagamentoAtual = null;
+
 }
+ 
 
-
-
-
+ 
 async function excluirCliente(clienteId){
 
   if(!confirm("Deseja realmente excluir este cliente?")) return;
@@ -3203,6 +3188,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
