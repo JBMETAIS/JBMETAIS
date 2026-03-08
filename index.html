@@ -1266,12 +1266,6 @@ Parcelas: ${parc}x<br>
 Valor Parcela: R$ ${valorParcela.toFixed(2)}<br>
 ` : ""}
 
-${pagamento === "cartao" ? `
-Parcelas: ${parc}x<br>
-Valor Parcela: R$ ${valorParcela.toFixed(2)}<br>
-` : ""}
-`;
-
 Forma Pagamento: ${
 pagamento === "dinheiro" ? "Dinheiro" :
 pagamento === "debito" ? "Cartão Débito" :
@@ -3138,6 +3132,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
