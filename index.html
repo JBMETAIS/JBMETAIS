@@ -1363,7 +1363,7 @@ async function gerarOrcamento(){
   console.log("Telefone digitado:", telefoneCliente);
  
   let pagamento = formaPagamento.value || "Não informado";
-  let qtdParcelas = Number(Number(parcelas.value) || 1;
+  let qtdParcelas = Number(parcelas.value) || 1;
 
 if(pagamento === "cartao"){
   qtdParcelas = Number(parcelas.value) || 1;
@@ -1373,7 +1373,7 @@ if(pagamento === "cartao"){
   }
 }
  
-console.log("Valor do select parcelas:", Number(parcelas.value);
+console.log("Valor do select parcelas:", Number(parcelas.value));
 console.log("Parcelas escolhidas:", qtdParcelas);
 console.log("Valor da parcela:", total / qtdParcelas);
  
@@ -1450,6 +1450,10 @@ console.log("Valor da parcela:", total / qtdParcelas);
   // ===============================
   else {
 
+console.log("Pagamento:", pagamento);
+console.log("Parcelas enviadas:", qtdParcelas);
+console.log("Valor do select:", parcelas.value);
+   
     const { data, error } = await supabaseClient
       .from("vendas")
       .insert([{
@@ -3186,6 +3190,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
