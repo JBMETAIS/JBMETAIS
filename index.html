@@ -936,6 +936,9 @@ if(!confirm("Confirmar finalização da venda?")){
 }
 
 
+ // pegar forma de pagamento corretamente
+let formaPagamento = document.getElementById("formaPagamentoSelect").value;
+
  // 1️⃣ Calcular subtotal
  
 let subtotal = carrinho.reduce((acc, item) => {
@@ -1054,7 +1057,7 @@ await supabaseClient
   .insert([{
     cliente_id: cliente.id,
     data: new Date(),
-    descricao: "Venda no PDV",
+    descricao: "Venda na conta",
     valor: total,
     tipo: "debito"
   }]);
@@ -3193,6 +3196,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
