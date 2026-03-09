@@ -3012,22 +3012,24 @@ w.print();
 
 
 
-function reimprimirComprovantePagamento(id){
+async function reimprimirComprovantePagamento(id){
 
-let pagamento = vendas.find(v => v.id === id);
+const { data, error } = await supabaseClient
+.from("vendas")
+.select("*")
+.eq("id", id)
+.single();
 
-console.log("pagamento encontrado:", pagamento);
-
-if(!pagamento){
+if(error || !data){
  alert("Pagamento não encontrado");
  return;
 }
 
 imprimirComprovantePagamento(
- pagamento.cliente,
- pagamento.valor,
- pagamento.forma_pagamento,
- pagamento.recibo,
+ data.cliente,
+ data.total,
+ data.forma_pagamento,
+ data.id,
  true
 );
 
@@ -3281,6 +3283,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
