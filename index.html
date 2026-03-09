@@ -2353,7 +2353,7 @@ async function reimprimirUltimaVenda(clienteId){
 
   let vendaFormatada = {
 
-    pedido: data.numero_pedido
+    pedido: data.numero_pedido,
     cliente: data.nome_do_cliente || "Consumidor"
     data: new Date(data.created_at).toLocaleString("pt-BR"),
     total: data.total,
@@ -3215,6 +3215,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
