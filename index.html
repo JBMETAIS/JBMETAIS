@@ -982,23 +982,23 @@ Valor da venda: R$ ${total.toFixed(2)}`);
 // buscar último pedido de conta cliente
 const { data: ultimaConta } = await supabaseClient
 .from("vendas")
-.select("numero_pedido")
+.select("numero_venda")
 .eq("tipo","CONTA_CLIENTE")
-.order("numero_pedido",{ ascending:false })
+.order("numero_venda",{ ascending:false })
 .limit(1)
 .single();
 
 let numeroConta = "00001";
 
 if(ultimaConta){
-numeroConta = String(Number(ultimaConta.numero_pedido)+1).padStart(5,"0");
+numeroConta = String(Number(ultimaConta.numero_venda)+1).padStart(5,"0");
 }
 
 // 🔥 1️⃣ Inserir venda
 const { data: vendaCriada, error: erroVenda } = await supabaseClient
 .from("vendas")
 .insert([{
-  numero_pedido: numeroConta,
+  numero_venda: numeroConta,
   cliente_id: cliente.id,
   nome_do_cliente: cliente.nome,
   telefone_do_cliente: telefoneCliente,
@@ -1099,22 +1099,22 @@ return; // 🔥 impede impressão de cupom
 // buscar último pedido de venda normal
 const { data: ultimaVenda } = await supabaseClient
 .from("vendas")
-.select("numero_pedido")
+.select("numero_venda")
 .eq("tipo","VENDA")
-.order("numero_pedido",{ ascending:false })
+.order("numero_venda",{ ascending:false })
 .limit(1)
 .single();
 
 let numeroPedido = "00001";
 
 if(ultimaVenda){
-numeroPedido = String(Number(ultimaVenda.numero_pedido)+1).padStart(5,"0");
+numeroPedido = String(Number(ultimaVenda.numero_venda)+1).padStart(5,"0");
 }
  
 const { data: vendaCriada, error: erroVenda } = await supabaseClient
 .from("vendas")
 .insert([{
-  numero_pedido: numeroPedido,
+  numero_venda: numeroPedido,
   cliente_id: null,
   nome_do_cliente: clienteNome,
   telefone_do_cliente: telefoneCliente,
@@ -2384,7 +2384,7 @@ async function reimprimirUltimaVenda(clienteId){
   }
 
   let vendaFormatada = {
-    pedido: data.numero_pedido,
+    pedido: data.numero_venda,
     cliente: data.nome_do_cliente || "Consumidor",
     data: new Date(data.created_at).toLocaleString("pt-BR"),
     total: data.total,
@@ -3249,6 +3249,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
