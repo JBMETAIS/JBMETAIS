@@ -2933,12 +2933,8 @@ alert("Orçamento carregado para edição ✏️");
 
 function imprimirComprovantePagamento(cliente, valor, formaPagamento, numeroRecibo, reimpressao=false){
 
-cliente = cliente || {nome:"Cliente"};
-
-valor = Number(valor) || 0;
-
-let saldoApos = Number(cliente.saldo_apos ?? cliente.saldo ?? 0);
-let limiteApos = Number(cliente.limite_apos ?? cliente.limite ?? 0);
+let saldoApos = cliente.saldo;
+let disponivel = cliente.limite - saldoApos;
 
 let recibo = String(numeroRecibo).substring(0,8).toUpperCase();
 
@@ -2949,7 +2945,6 @@ let html = `
 <html>
 <head>
 <style>
-
 body{
 font-family:monospace;
 width:280px;
@@ -2957,81 +2952,46 @@ margin:0;
 padding:10px;
 font-size:12px;
 }
-
-.center{
-text-align:center;
-}
-
-.row{
-display:flex;
-justify-content:space-between;
-}
-
-hr{
-border:none;
-border-top:1px dashed #000;
-margin:6px 0;
-}
-
+.center{text-align:center;}
+hr{border-top:1px dashed #000;}
 </style>
 </head>
 <body>
 
 <div class="center">
-
 ${reimpressao ? "<strong>REIMPRESSÃO</strong><br>" : ""}
-
 <strong>COMPROVANTE DE PAGAMENTO</strong><br>
 Recibo Nº: ${recibo}<br><br>
-
 ${config.nome || "JB SANTOS"}<br>
 CNPJ: ${config.cnpj || ""}<br>
 ${config.endereco || ""}<br>
-${config.telefone || ""}
-
+${config.telefone || ""}<br>
 </div>
 
 <hr>
 
 Cliente: ${cliente.nome}<br>
-Data: ${new Date().toLocaleString("pt-BR")}
+Data: ${new Date().toLocaleString("pt-BR")}<br>
 
 <hr>
 
-<div class="row">
-<span>Forma Pagamento:</span>
-<span>${formaPagamento}</span>
-</div>
-
-<div class="row">
-<span>Valor Pago:</span>
-<span>R$ ${valor.toFixed(2)}</span>
-</div>
+Forma de Pagamento: ${formaPagamento}<br>
+Valor Pago: R$ ${valor.toFixed(2)}<br>
 
 <br>
 
-<div class="center">
-Pgto. de conta em aberto
-</div>
+         Pgto. de conta em aberto
 
 <hr>
 
-<div class="row">
-<span>Saldo após:</span>
-<span>R$ ${saldoApos.toFixed(2)}</span>
-</div>
-
-<div class="row">
-<span>Limite disponível:</span>
-<span>R$ ${limiteApos.toFixed(2)}</span>
-</div>
+Saldo Após Pagamento: R$ ${saldoApos.toFixed(2)}<br>
+Limite Disponível: R$ ${disponivel.toFixed(2)}<br>
 
 <hr>
 
 <div class="center">
 Pagamento registrado com sucesso<br><br>
-_____________________________<br>
-Assinatura
+Assinatura: ______________________
 </div>
 
 </body>
@@ -3318,6 +3278,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
