@@ -2022,7 +2022,7 @@ ${v.tipo === "CONTA_CLIENTE" ? `
 
 ${v.tipo === "PAGAMENTO_CONTA" ? `
 <div class="tooltip">
-<button class="btn-small" onclick="reimprimirComprovantePagamento(${index})">🧾</button>
+<button class="btn-small" onclick="reimprimirComprovantePagamento('${v.id}')">🧾</button>
 <span class="tooltip-text">Reimprimir Comprovante</span>
 </div>
 ` : ""}
@@ -3002,24 +3002,19 @@ w.print();
 
 
 
-function reimprimirComprovantePagamento(index){
+async function reimprimirComprovantePagamento(id){
 
-let pag = vendas[index];
+let pagamento = vendas.find(v => v.id === id);
 
-let cliente = {
-  nome: pag.cliente,
-  saldo: pag.saldo,
-  limite: pag.limite
-};
-
-let valor = pag.total;
-let formaPagamento = pag.pagamento;
-let numeroRecibo = pag.numeroRecibo;
-
-imprimirComprovantePagamento(cliente, valor, formaPagamento, numeroRecibo);
-
+if(!pagamento){
+  alert("Pagamento não encontrado");
+  return;
 }
 
+imprimirComprovantePagamento(pagamento);
+
+}
+ 
 
 function verificarFormaPagamentoModal(){
 
@@ -3268,6 +3263,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
