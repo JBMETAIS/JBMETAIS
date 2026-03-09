@@ -984,9 +984,9 @@ const { data: ultimaConta } = await supabaseClient
 .from("vendas")
 .select("numero_venda")
 .eq("tipo","CONTA_CLIENTE")
-.order("numero_venda",{ ascending:false })
+.order("id",{ ascending:false })
 .limit(1)
-.single();
+.maybeSingle();
 
 let numeroConta = "00001";
 
@@ -3247,6 +3247,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
