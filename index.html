@@ -2945,6 +2945,7 @@ let html = `
 <html>
 <head>
 <style>
+
 body{
 font-family:monospace;
 width:280px;
@@ -2952,46 +2953,85 @@ margin:0;
 padding:10px;
 font-size:12px;
 }
-.center{text-align:center;}
-hr{border-top:1px dashed #000;}
+
+.center{
+text-align:center;
+}
+
+.row{
+display:flex;
+justify-content:space-between;
+}
+
+hr{
+border:none;
+border-top:1px dashed #000;
+margin:6px 0;
+}
+
 </style>
 </head>
 <body>
 
 <div class="center">
-${reimpressao ? "<strong>REIMPRESSÃO</strong><br>" : ""}
+
+${reimpressao ? "<strong>*** REIMPRESSÃO ***</strong><br>" : ""}
+
 <strong>COMPROVANTE DE PAGAMENTO</strong><br>
 Recibo Nº: ${recibo}<br><br>
-${config.nome || "JB SANTOS"}<br>
+
+<strong>${config.nome || "JB SANTOS"}</strong><br>
 CNPJ: ${config.cnpj || ""}<br>
 ${config.endereco || ""}<br>
-${config.telefone || ""}<br>
+${config.telefone || ""}
+
 </div>
 
 <hr>
 
 Cliente: ${cliente.nome}<br>
-Data: ${new Date().toLocaleString("pt-BR")}<br>
+Data: ${new Date().toLocaleString("pt-BR")}
 
 <hr>
 
-Forma de Pagamento: ${formaPagamento}<br>
-Valor Pago: R$ ${valor.toFixed(2)}<br>
+<div class="row">
+<span>Forma de Pagamento:</span>
+<span>${formaPagamento}</span>
+</div>
+
+<div class="row">
+<span>Valor Pago:</span>
+<span>R$ ${valor.toFixed(2)}</span>
+</div>
 
 <br>
 
-         Pgto. de conta em aberto
+<div class="center">
+Pgto. de conta em aberto
+</div>
 
 <hr>
 
-Saldo Após Pagamento: R$ ${saldoApos.toFixed(2)}<br>
-Limite Disponível: R$ ${disponivel.toFixed(2)}<br>
+<div class="row">
+<span>Saldo após:</span>
+<span>R$ ${saldoApos.toFixed(2)}</span>
+</div>
+
+<div class="row">
+<span>Limite disponível:</span>
+<span>R$ ${disponivel.toFixed(2)}</span>
+</div>
 
 <hr>
 
 <div class="center">
-Pagamento registrado com sucesso<br><br>
-Assinatura: ______________________
+Pagamento registrado com sucesso
+
+<br><br>
+
+_____________________________<br>
+Assinatura
+
 </div>
 
 </body>
@@ -3003,7 +3043,6 @@ w.document.close();
 w.print();
 
 }
-
 
 
 async function reimprimirComprovantePagamento(id){
@@ -3278,6 +3317,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
