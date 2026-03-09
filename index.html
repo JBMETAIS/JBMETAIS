@@ -2127,21 +2127,20 @@ async function verExtrato(clienteId){
 
   // 🔹 MONTAR EXTRATO
   let html = "";
-  let saldoAnterior = 0;
 
   movimentacoes.forEach(item => {
 
-    // 🔹 CALCULA VALOR DA LINHA PELO SALDO ANTERIOR
-    const valorLinha = item.saldo_apos - saldoAnterior;
-    saldoAnterior = item.saldo_apos;
+    // 🔹 DEFINE VALOR DA LINHA
+    // Valor positivo = compra (crédito), Valor negativo = pagamento (débito)
+    const valorLinha = item.tipo === "credito" ? Number(item.valor) : -Number(item.valor);
 
     // 🔹 DEFINE COR DO VALOR
     let cor = valorLinha > 0 ? "#c62828" : "#1fa84f";
 
-    // 🔹 DEFINE COR DE FUNDO LEVE
+    // 🔹 COR DE FUNDO LEVE
     let bgCor = valorLinha > 0 ? "rgba(198,40,40,0.05)" : "rgba(31,168,79,0.05)";
 
-    // 🔹 DEFINE TEXTO COM ÍCONE
+    // 🔹 ÍCONE E DESCRIÇÃO
     let descricaoFormatada = valorLinha > 0 ? "🛒 Compra" : "💰 Pagamento";
 
     html += `
@@ -2159,14 +2158,13 @@ async function verExtrato(clienteId){
         </td>
 
         <td style="padding:8px; font-weight:bold;">
-          R$ ${item.saldo_apos.toFixed(2)}
+          R$ ${Number(item.saldo_apos).toFixed(2)}
         </td>
       </tr>
     `;
   });
 
   document.getElementById("extratoNome").innerText = cliente.nome;
-  // Último saldo ou 0 se não houver movimentações
   const saldoFinal = movimentacoes.length ? movimentacoes[movimentacoes.length - 1].saldo_apos : 0;
   document.getElementById("extratoSaldo").innerText = "R$ " + saldoFinal.toFixed(2);
   document.getElementById("extratoTabela").innerHTML = html;
@@ -3197,6 +3195,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
