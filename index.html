@@ -990,8 +990,8 @@ const { data: ultimaConta } = await supabaseClient
 
 let numeroConta = "00001";
 
-if(ultimaConta){
-numeroConta = String(Number(ultimaConta.numero_venda)+1).padStart(5,"0");
+if(ultimaConta && ultimaConta.numero_venda){
+numeroConta = String(Number(ultimaConta.numero_venda) + 1).padStart(5,"0");
 }
 
 // 🔥 1️⃣ Inserir venda
@@ -2494,6 +2494,28 @@ async function registrarPagamento(cliente, valor, formaPagamento){
     // aqui você pode decidir se quer continuar ou não
   }
 
+
+
+// 1️⃣c️⃣ registrar no histórico geral (tabela vendas)
+await supabaseClient
+.from("vendas")
+.insert([{
+  numero_venda: null,
+  cliente_id: cliente.id,
+  nome_do_cliente: cliente.nome,
+  descricao: "Pagamento de conta",
+  forma_pagamento: formaPagamento,
+  subtotal: valor,
+  desconto: 0,
+  total: valor,
+  valor_recebido: valor,
+  troco: 0,
+  parcelas: 1,
+  tipo: "PAGAMENTO_CONTA"
+}]);
+ 
+
+ 
   // 2️⃣ atualizar cliente no banco
   await supabaseClient
     .from("clientes")
@@ -3247,6 +3269,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
