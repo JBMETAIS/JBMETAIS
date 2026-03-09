@@ -2933,17 +2933,14 @@ alert("Orçamento carregado para edição ✏️");
 
 function imprimirComprovantePagamento(cliente, valor, formaPagamento, numeroRecibo, dataPagamento, saldoApos, limiteDisponivel, reimpressao=false){
 
-cliente = cliente || {nome:"Cliente", saldo:0, limite:0};
+cliente = cliente || {nome:"Cliente"};
 
 valor = Number(valor) || 0;
 formaPagamento = formaPagamento || "Não informado";
 numeroRecibo = numeroRecibo || "00000000";
 
-let saldoApos = Number(cliente.saldo) || 0;
-let disponivel = (Number(cliente.limite) || 0) - saldoApos;
-
 let recibo = String(numeroRecibo).substring(0,8).toUpperCase();
- 
+
 let largura = 302;
 let w = window.open("", "", `width=${largura},height=600`);
 
@@ -2986,12 +2983,12 @@ Valor Pago: R$ ${valor.toFixed(2)}<br>
 
 <br>
 
-         Pgto. de conta em aberto
+Pgto. de conta em aberto
 
 <hr>
 
 Saldo Após Pagamento: R$ ${Number(saldoApos).toFixed(2)}<br>
-Limite Disponível: R$ ${Number(limiteApos).toFixed(2)}<br>
+Limite Disponível: R$ ${Number(limiteDisponivel).toFixed(2)}<br>
 
 <hr>
 
@@ -3284,6 +3281,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
