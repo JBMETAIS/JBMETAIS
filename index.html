@@ -501,14 +501,22 @@ style="padding:8px;width:250px;margin-bottom:10px;border-radius:6px;border:1px s
 <h1>Clientes</h1>
 
 <div class="card">
-<input type="text" id="pesquisaCliente" placeholder="Pesquisar cliente..." onkeyup="filtrarClientes()">
 <input id="cNome" placeholder="Nome do Cliente">
 <input id="cTelefone" placeholder="Telefone">
 <input id="cLimite" type="number" placeholder="Limite" value="500">
 <button class="primary" onclick="cadastrarCliente()">Cadastrar Cliente</button>
 </div>
 
+<input 
+type="text" 
+id="pesquisaCliente" 
+placeholder="Pesquisar cliente..."
+onkeyup="filtrarClientes()"
+style="width:100%; padding:10px; margin:10px 0;"
+>
+
 <table id="tClientes"></table>
+
 </section>
 
 </div>
@@ -557,21 +565,20 @@ function filtrarClientes(){
 
 let termo = document.getElementById("pesquisaCliente").value.toLowerCase();
 
-let linhas = document.querySelectorAll("#tabelaClientes tbody tr");
+let linhas = document.querySelectorAll("#tClientes tr");
 
-linhas.forEach(linha => {
+linhas.forEach((linha, index) => {
 
-let nome = linha.innerText.toLowerCase();
+if(index === 0) return; // ignora cabeçalho
 
-linha.style.display = nome.includes(termo) ? "" : "none";
+let texto = linha.innerText.toLowerCase();
+
+linha.style.display = texto.includes(termo) ? "" : "none";
 
 });
 
 }
 
-
-
- 
 
 
 async function buscarCliente(){
@@ -3290,6 +3297,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
