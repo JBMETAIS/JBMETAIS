@@ -1373,11 +1373,13 @@ let sub = i.preco * i.qtd;
 html += `
 <tr>
 <td>${i.codigo || "-"}</td>
-<td>
-${i.nome}<br>
-${i.qtd} x ${i.preco.toFixed(2)}
-</td>
+<td>${i.nome}</td>
 <td class="right">${sub.toFixed(2)}</td>
+</tr>
+
+<tr>
+<td></td>
+<td colspan="2">${i.qtd} x ${i.preco.toFixed(2)}</td>
 </tr>
 `;
 });
@@ -3392,6 +3394,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
