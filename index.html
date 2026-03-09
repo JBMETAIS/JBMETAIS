@@ -2931,7 +2931,7 @@ alert("Orçamento carregado para edição ✏️");
 
  
 
-function imprimirComprovantePagamento(cliente, valor, formaPagamento, numeroRecibo, dataPagamento, reimpressao=false){
+function imprimirComprovantePagamento(cliente, valor, formaPagamento, numeroRecibo, dataPagamento, saldoApos, limiteDisponivel, reimpressao=false){
 
 cliente = cliente || {nome:"Cliente", saldo:0, limite:0};
 
@@ -2991,7 +2991,7 @@ Valor Pago: R$ ${valor.toFixed(2)}<br>
 <hr>
 
 Saldo Após Pagamento: R$ ${saldoApos.toFixed(2)}<br>
-Limite Disponível: R$ ${disponivel.toFixed(2)}<br>
+Limite Disponível: R$ ${limiteDisponivel.toFixed(2)}<br>
 
 <hr>
 
@@ -3284,6 +3284,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
