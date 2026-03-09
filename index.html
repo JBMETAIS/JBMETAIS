@@ -1366,25 +1366,24 @@ Data: ${dataVenda}
 
 <table>
 
-<tr>
-<th class="col-cod">Cod</th>
-<th class="col-prod">Produto</th>
-<th class="col-total">Total</th>
-</tr>
+<pre>
+COD   PRODUTO             TOTAL
+</pre>
 `;
 
 itens.forEach(i=>{
+
 let sub = i.preco * i.qtd;
 
+let cod = String(i.codigo || "-").padEnd(6," ");
+let nome = String(i.nome).substring(0,18).padEnd(18," ");
+let total = sub.toFixed(2).padStart(7," ");
+
+let qtdPreco = (i.qtd + " x " + i.preco.toFixed(2));
+
 html += `
-<tr>
-<td class="col-cod">${i.codigo || "-"}</td>
-<td class="col-prod">
-${i.nome}<br>
-${i.qtd} x ${i.preco.toFixed(2)}
-</td>
-<td class="col-total">${sub.toFixed(2)}</td>
-</tr>
+${cod}${nome}${total}<br>
+      ${qtdPreco}<br>
 `;
 });
 
@@ -3398,6 +3397,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
