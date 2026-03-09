@@ -1955,10 +1955,8 @@ ${v.tipo === "ORCAMENTO" ? `
 
 ${v.tipo === "ORCAMENTO" ? `
 <div class="tooltip">
-<button onclick="converterOrcamento('${v.id}')">
-💰 Converter
-</button>
-<span class="tooltip-text">Converter em venda</span>
+<button class="btn-small" onclick="converterOrcamento('${v.id}')">💰</button>
+<span class="tooltip-text">Converter Orçamento</span>
 </div>
 ` : ""}
 
@@ -3193,6 +3191,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
