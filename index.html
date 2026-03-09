@@ -3016,6 +3016,8 @@ function reimprimirComprovantePagamento(id){
 
 let pagamento = vendas.find(v => v.id === id);
 
+console.log("pagamento encontrado:", pagamento);
+
 if(!pagamento){
  alert("Pagamento não encontrado");
  return;
@@ -3279,6 +3281,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
