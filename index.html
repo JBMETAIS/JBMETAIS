@@ -1952,7 +1952,7 @@ let cor = "#000";
 let valorFormatado = v.total.toFixed(2);
 
 // cores por tipo
-if(v.tipo === "PAGAMENTO"){
+if(v.tipo === "PAGAMENTO_CONTA"){
   cor = "#1fa84f";
   valorFormatado = "- R$ " + valorFormatado;
 }
@@ -1976,7 +1976,7 @@ let tipoFormatado =
 v.tipo === "VENDA" ? "🧾 Venda" :
 v.tipo === "ORCAMENTO" ? "📄 Orçamento" :
 v.tipo === "CONTA_CLIENTE" ? "📒 Conta Cliente" :
-v.tipo === "PAGAMENTO" ? "💰 Pagamento Conta" :
+v.tipo === "PAGAMENTO_CONTA" ? "💰 Pagamento Conta" :
 v.tipo;
 
 tHistorico.innerHTML+=`
@@ -2020,7 +2020,7 @@ ${v.tipo === "CONTA_CLIENTE" ? `
 </div>
 ` : ""}
 
-${v.tipo === "PAGAMENTO" ? `
+${v.tipo === "PAGAMENTO_CONTA" ? `
 <div class="tooltip">
 <button class="btn-small" onclick="reimprimirComprovantePagamento(${index})">🧾</button>
 <span class="tooltip-text">Reimprimir Comprovante</span>
@@ -2503,7 +2503,6 @@ await supabaseClient
   numero_venda: null,
   cliente_id: cliente.id,
   nome_do_cliente: cliente.nome,
-  descricao: "Pagamento de conta",
   forma_pagamento: formaPagamento,
   subtotal: valor,
   desconto: 0,
@@ -3269,6 +3268,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
