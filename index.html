@@ -2917,14 +2917,28 @@ let html = `
 <style>
 body{
 font-family:monospace;
-width:280px;
+width:260px;
 margin:0;
 padding:10px;
 }
 .center{text-align:center;}
 hr{border-top:1px dashed #000;}
-table{width:100%;font-size:12px;}
-td{padding:2px 0;}
+table{
+width:100%;
+font-size:12px;
+border-collapse:collapse;
+table-layout:fixed;
+}
+
+td{
+padding:2px 0;
+vertical-align:top;
+word-wrap:break-word;
+}
+
+td:nth-child(1){width:50px;}   /* código */
+td:nth-child(2){width:150px;}  /* produto */
+td:nth-child(3){width:60px;text-align:right;} /* total */
 </style>
 </head>
 <body>
@@ -3277,6 +3291,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
