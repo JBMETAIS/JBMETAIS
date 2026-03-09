@@ -979,11 +979,26 @@ Valor da venda: R$ ${total.toFixed(2)}`);
   return;
 }
 
+// buscar último pedido de conta cliente
+const { data: ultimaConta } = await supabaseClient
+.from("vendas")
+.select("numero_pedido")
+.eq("tipo","CONTA_CLIENTE")
+.order("numero_pedido",{ ascending:false })
+.limit(1)
+.single();
+
+let numeroConta = "00001";
+
+if(ultimaConta){
+numeroConta = String(Number(ultimaConta.numero_pedido)+1).padStart(5,"0");
+}
 
 // 🔥 1️⃣ Inserir venda
 const { data: vendaCriada, error: erroVenda } = await supabaseClient
 .from("vendas")
 .insert([{
+  numero_pedido: numeroConta,
   cliente_id: cliente.id,
   nome_do_cliente: cliente.nome,
   telefone_do_cliente: telefoneCliente,
@@ -994,7 +1009,6 @@ const { data: vendaCriada, error: erroVenda } = await supabaseClient
   valor_recebido: 0,
   troco: 0,
   parcelas: 1,
-  numero_pedido: numeroPedido,
   tipo: "CONTA_CLIENTE"
 }])
 .select()
@@ -1081,9 +1095,26 @@ return; // 🔥 impede impressão de cupom
 // 🔥 VENDA NORMAL
 // ============================
 
+
+// buscar último pedido de venda normal
+const { data: ultimaVenda } = await supabaseClient
+.from("vendas")
+.select("numero_pedido")
+.eq("tipo","VENDA")
+.order("numero_pedido",{ ascending:false })
+.limit(1)
+.single();
+
+let numeroPedido = "00001";
+
+if(ultimaVenda){
+numeroPedido = String(Number(ultimaVenda.numero_pedido)+1).padStart(5,"0");
+}
+ 
 const { data: vendaCriada, error: erroVenda } = await supabaseClient
 .from("vendas")
 .insert([{
+  numero_pedido: numeroPedido,
   cliente_id: null,
   nome_do_cliente: clienteNome,
   telefone_do_cliente: telefoneCliente,
@@ -3218,6 +3249,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
