@@ -2931,28 +2931,16 @@ alert("Orçamento carregado para edição ✏️");
 
  
 
-function imprimirComprovantePagamento(
-cliente,
-valor,
-formaPagamento,
-numeroRecibo,
-saldoApos,
-limiteApos,
-dataPagamento,
-reimpressao=false
-){
+function imprimirComprovantePagamento(cliente, valor, formaPagamento, numeroRecibo, reimpressao=false){
 
 cliente = cliente || {nome:"Cliente"};
 
 valor = Number(valor) || 0;
-saldoApos = Number(saldoApos) || 0;
-limiteApos = Number(limiteApos) || 0;
+
+let saldoApos = Number(cliente.saldo_apos ?? cliente.saldo ?? 0);
+let limiteApos = Number(cliente.limite_apos ?? cliente.limite ?? 0);
 
 let recibo = String(numeroRecibo).substring(0,8).toUpperCase();
-
-let data = dataPagamento
-? new Date(dataPagamento).toLocaleString("pt-BR")
-: new Date().toLocaleString("pt-BR");
 
 let largura = 302;
 let w = window.open("", "", `width=${largura},height=600`);
@@ -2963,14 +2951,16 @@ let html = `
 <style>
 
 body{
-font-family: monospace;
+font-family:monospace;
 width:280px;
 margin:0;
 padding:10px;
 font-size:12px;
 }
 
-.center{text-align:center;}
+.center{
+text-align:center;
+}
 
 .row{
 display:flex;
@@ -2985,17 +2975,16 @@ margin:6px 0;
 
 </style>
 </head>
-
 <body>
 
 <div class="center">
 
-${reimpressao ? "<b>*** REIMPRESSÃO ***</b><br>" : ""}
+${reimpressao ? "<strong>REIMPRESSÃO</strong><br>" : ""}
 
-<b>COMPROVANTE DE PAGAMENTO</b><br>
+<strong>COMPROVANTE DE PAGAMENTO</strong><br>
 Recibo Nº: ${recibo}<br><br>
 
-<b>${config.nome || "JB SANTOS"}</b><br>
+${config.nome || "JB SANTOS"}<br>
 CNPJ: ${config.cnpj || ""}<br>
 ${config.endereco || ""}<br>
 ${config.telefone || ""}
@@ -3005,7 +2994,7 @@ ${config.telefone || ""}
 <hr>
 
 Cliente: ${cliente.nome}<br>
-Data: ${data}
+Data: ${new Date().toLocaleString("pt-BR")}
 
 <hr>
 
@@ -3040,14 +3029,9 @@ Pgto. de conta em aberto
 <hr>
 
 <div class="center">
-
-Pagamento registrado com sucesso
-
-<br><br>
-
+Pagamento registrado com sucesso<br><br>
 _____________________________<br>
 Assinatura
-
 </div>
 
 </body>
@@ -3057,6 +3041,7 @@ Assinatura
 w.document.write(html);
 w.document.close();
 w.print();
+
 }
 
 
@@ -3333,6 +3318,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
