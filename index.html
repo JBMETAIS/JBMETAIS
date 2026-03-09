@@ -2325,6 +2325,7 @@ reimprimirCupomVenda(venda);
 
 
  
+ 
 async function reimprimirUltimaVenda(clienteId){
 
   const { data, error } = await supabaseClient
@@ -2352,9 +2353,8 @@ async function reimprimirUltimaVenda(clienteId){
   }
 
   let vendaFormatada = {
-
     pedido: data.numero_pedido,
-    cliente: data.nome_do_cliente || "Consumidor"
+    cliente: data.nome_do_cliente || "Consumidor",
     data: new Date(data.created_at).toLocaleString("pt-BR"),
     total: data.total,
     desconto: data.desconto || 0,
@@ -2362,6 +2362,7 @@ async function reimprimirUltimaVenda(clienteId){
     valorRecebido: data.valor_recebido || 0,
     troco: data.troco || 0,
     parcelas: data.parcelas || 1,
+
     itens: data.itens_venda.map(item => ({
       nome: item.produtos.produto,
       qtd: item.quantidade,
@@ -2371,6 +2372,8 @@ async function reimprimirUltimaVenda(clienteId){
 
   imprimirCupom(vendaFormatada.total, "REIMPRESSÃO", vendaFormatada);
 }
+
+ 
  
 
 function novaVendaCliente(nomeCliente){
@@ -3215,6 +3218,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
