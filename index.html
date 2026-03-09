@@ -2936,14 +2936,17 @@ function imprimirComprovantePagamento(cliente, valor, formaPagamento, numeroReci
 cliente = cliente || {nome:"Cliente"};
 
 valor = Number(valor) || 0;
+saldoApos = Number(saldoApos) || 0;
+limiteDisponivel = Number(limiteDisponivel) || 0;
+
 formaPagamento = formaPagamento || "Não informado";
 numeroRecibo = numeroRecibo || "00000000";
 
-
-saldoApos = Number(saldoApos) || 0;
-limiteDisponivel = Number(limiteDisponivel) || 0;
- 
 let recibo = String(numeroRecibo).substring(0,8).toUpperCase();
+
+let data = dataPagamento 
+? new Date(dataPagamento).toLocaleString("pt-BR")
+: new Date().toLocaleString("pt-BR");
 
 let largura = 302;
 let w = window.open("", "", `width=${largura},height=600`);
@@ -2952,53 +2955,99 @@ let html = `
 <html>
 <head>
 <style>
+
 body{
-font-family:monospace;
+font-family: monospace;
 width:280px;
 margin:0;
 padding:10px;
 font-size:12px;
 }
-.center{text-align:center;}
-hr{border-top:1px dashed #000;}
+
+.center{
+text-align:center;
+}
+
+.right{
+text-align:right;
+}
+
+.row{
+display:flex;
+justify-content:space-between;
+}
+
+hr{
+border:none;
+border-top:1px dashed #000;
+margin:6px 0;
+}
+
 </style>
 </head>
+
 <body>
 
 <div class="center">
-${reimpressao ? "<strong>REIMPRESSÃO</strong><br>" : ""}
-<strong>COMPROVANTE DE PAGAMENTO</strong><br>
+
+${reimpressao ? "<b>*** REIMPRESSÃO ***</b><br>" : ""}
+
+<b>COMPROVANTE DE PAGAMENTO</b><br>
 Recibo Nº: ${recibo}<br><br>
-${config.nome || "JB SANTOS"}<br>
+
+<b>${config.nome || "JB SANTOS"}</b><br>
 CNPJ: ${config.cnpj || ""}<br>
 ${config.endereco || ""}<br>
-${config.telefone || ""}<br>
+${config.telefone || ""}
+
 </div>
 
 <hr>
 
 Cliente: ${cliente.nome}<br>
-Data: ${new Date(dataPagamento).toLocaleString("pt-BR")}<br>
+Data: ${data}
 
 <hr>
 
-Forma de Pagamento: ${formaPagamento}<br>
-Valor Pago: R$ ${valor.toFixed(2)}<br>
+<div class="row">
+<span>Forma Pagamento:</span>
+<span>${formaPagamento}</span>
+</div>
+
+<div class="row">
+<span>Valor Pago:</span>
+<span>R$ ${valor.toFixed(2)}</span>
+</div>
 
 <br>
 
+<div class="center">
 Pgto. de conta em aberto
+</div>
 
 <hr>
 
-Saldo Após Pagamento: R$ ${Number(saldoApos).toFixed(2)}<br>
-Limite Disponível: R$ ${Number(limiteDisponivel).toFixed(2)}<br>
+<div class="row">
+<span>Saldo após:</span>
+<span>R$ ${saldoApos.toFixed(2)}</span>
+</div>
+
+<div class="row">
+<span>Limite disponível:</span>
+<span>R$ ${limiteDisponivel.toFixed(2)}</span>
+</div>
 
 <hr>
 
 <div class="center">
-Pagamento registrado com sucesso<br><br>
-Assinatura: ______________________
+
+Pagamento registrado com sucesso
+
+<br><br>
+
+_____________________________<br>
+Assinatura
+
 </div>
 
 </body>
@@ -3285,6 +3334,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
