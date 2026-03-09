@@ -2935,8 +2935,12 @@ function imprimirComprovantePagamento(cliente, valor, formaPagamento, numeroReci
 
 cliente = cliente || {nome:"Cliente", saldo:0, limite:0};
 
-let saldoApos = cliente.saldo || 0;
-let disponivel = (cliente.limite || 0) - saldoApos;
+valor = Number(valor) || 0;
+formaPagamento = formaPagamento || "Não informado";
+numeroRecibo = numeroRecibo || "00000000";
+
+let saldoApos = Number(cliente.saldo) || 0;
+let disponivel = (Number(cliente.limite) || 0) - saldoApos;
 
 let recibo = String(numeroRecibo).substring(0,8).toUpperCase();
  
@@ -3275,6 +3279,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
