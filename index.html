@@ -3039,14 +3039,9 @@ alert("Orçamento carregado para edição ✏️");
 
  
 
-function reimprimirComprovantePagamento(pagamento){
+function reimprimirComprovantePagamento(p){
 
-  if(!pagamento.comprovante_html){
-    alert("Comprovante não encontrado");
-    return;
-  }
-
-  imprimirHtml(pagamento.comprovante_html);
+imprimirHtml(p.comprovante_html);
 
 }
  
@@ -3403,6 +3398,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
