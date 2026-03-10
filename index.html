@@ -3046,7 +3046,7 @@ alert("Orçamento carregado para edição ✏️");
 
  
 
-function imprimirComprovantePagamento(cliente, valor, formaPagamento, numeroRecibo, reimpressao=false){
+function imprimirComprovantePagamento(cliente, valor, formaPagamento, numeroRecibo, dataPagamento, reimpressao=false){
 
 let saldoApos = cliente.saldo;
 let disponivel = cliente.limite - saldoApos;
@@ -3123,7 +3123,7 @@ ${config.telefone || ""}<br>
 
 <div class="linha">
 <span>Data:</span>
-<span>${new Date().toLocaleString("pt-BR")}</span>
+<span>${dataPagamento}</span>
 </div>
 
 <hr>
@@ -3199,6 +3199,7 @@ clienteObj,
 Number(pagamento.valor || pagamento.valor_pago || 0),
 pagamento.forma_pagamento || pagamento.forma || "PIX",
 pagamento.numero_recibo || pagamento.id,
+pagamento.data || pagamento.data_pagamento,
 true
 );
 
@@ -3453,6 +3454,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
