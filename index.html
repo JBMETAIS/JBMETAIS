@@ -3039,25 +3039,14 @@ alert("Orçamento carregado para edição ✏️");
 
  
 
-async function reimprimirComprovantePagamento(idPagamento){
+function reimprimirComprovantePagamento(pagamento){
 
-const { data, error } = await supabaseClient
-.from("pagamentos")
-.select("*")
-.eq("id", idPagamento)
-.single();
-
-if(error || !data){
-alert("Pagamento não encontrado");
-return;
-}
-
-if(!data.comprovante_html){
+if(!pagamento.comprovante_html){
 alert("Comprovante não encontrado");
 return;
 }
 
-imprimirHtml(data.comprovante_html);
+imprimirHtml(pagamento.comprovante_html);
 
 }
  
@@ -3414,6 +3403,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
