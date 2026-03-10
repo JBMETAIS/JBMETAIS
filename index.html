@@ -483,6 +483,14 @@ style="padding:8px;width:250px;margin-bottom:10px;border-radius:6px;border:1px s
 
 <section id="historico" style="display:none">
 <h1>Histórico</h1>
+
+<input 
+id="pesquisaHistorico"
+placeholder="Pesquisar cliente, tipo ou valor..."
+oninput="filtrarHistorico()"
+style="padding:8px;width:300px;margin-bottom:10px;border-radius:6px;border:1px solid #ccc;"
+>
+
 <table id="tHistorico"></table>
 </section>
 
@@ -2153,6 +2161,29 @@ ${v.tipo === "PAGAMENTO_CONTA" ? `
 }
 
 
+
+
+function filtrarHistorico(){
+
+let termo = document.getElementById("pesquisaHistorico").value.toLowerCase();
+
+let linhas = document.querySelectorAll("#tHistorico tr");
+
+linhas.forEach((linha,index)=>{
+
+if(index === 0) return; // ignora cabeçalho
+
+let texto = linha.innerText.toLowerCase();
+
+linha.style.display = texto.includes(termo) ? "" : "none";
+
+});
+
+}
+
+
+ 
+
 async function excluirVenda(id){
 
   if(!confirm("Deseja realmente excluir esta venda?")) return;
@@ -3410,6 +3441,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
