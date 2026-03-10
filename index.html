@@ -1110,14 +1110,27 @@ await carregarProdutos();
 
 alert("Venda marcada na conta com sucesso!");
 
+// limpar dados
 carrinho = [];
 descontoAtual = 0;
+
+document.getElementById("clienteNome").value = "";
+document.getElementById("telefoneCliente").value = "";
+
+document.getElementById("formaPagamento").value = "";
+
+valorRecebido.value = "";
+troco.value = "";
+
+areaCartao.style.display = "none";
+areaDinheiro.style.display = "none";
+
+if(parcelas) parcelas.value = 1;
 
 atualizarCarrinho();
 atualizarClientes();
 
-return; // 🔥 impede impressão de cupom
-}
+return;
 
 
 
@@ -1215,9 +1228,27 @@ if(formaPagamento !== "conta"){
 
 alert("Venda finalizada com sucesso!");
 
+// limpar dados da venda
 carrinho = [];
 descontoAtual = 0;
 
+// limpar cliente
+document.getElementById("clienteNome").value = "";
+document.getElementById("telefoneCliente").value = "";
+
+// limpar pagamento
+document.getElementById("formaPagamento").value = "";
+valorRecebido.value = "";
+troco.value = "";
+
+// esconder áreas de pagamento
+areaCartao.style.display = "none";
+areaDinheiro.style.display = "none";
+
+// resetar parcelas
+if(parcelas) parcelas.value = 1;
+
+// atualizar tela
 atualizarCarrinho();
 atualizarClientes();
 
@@ -2967,19 +2998,25 @@ descontoAtual = 0;
 // limpa cliente
 clienteNome.value = "";
 
-// 🔥 reseta forma de pagamento corretamente
+// 🔥 reseta forma de pagamento
 formaPagamento.value = "";
 areaCartao.style.display = "none";
 areaDinheiro.style.display = "none";
 
-// limpa valores
+// reseta parcelas
+if(parcelas) parcelas.value = 1;
+
+// limpa valores da tela
 document.getElementById("subtotal").innerText = "0.00";
 document.getElementById("descontoInfo").innerText = "0.00";
 document.getElementById("total").innerText = "0.00";
 
-// limpa troco
+// limpa pagamento
 valorRecebido.value = "";
 troco.value = "";
+
+// remove foco de inputs
+if(document.activeElement) document.activeElement.blur();
 
 // esconde saldo rápido
 fecharSaldo();
@@ -3046,8 +3083,8 @@ let saldoApos = cliente.saldo;
 let disponivel = cliente.limite - saldoApos;
 
 let recibo = numeroRecibo
- ? "REC-" + String(numeroRecibo).padStart(5,"0")
- : "REC-00000";
+? String(numeroRecibo).replace(/[^0-9]/g,"").slice(-6).padStart(6,"0")
+: "000000";
  
 let largura = 302;
 let w = window.open("", "", `width=${largura},height=600`);
@@ -3178,22 +3215,22 @@ w.print();
 async function reimprimirComprovantePagamento(pagamento){
 
 if(!pagamento){
-  alert("Pagamento não encontrado");
-  return;
+alert("Pagamento não encontrado");
+return;
 }
 
 let clienteObj = {
-  nome: pagamento.cliente || pagamento.nome_cliente || "Cliente",
-  saldo: pagamento.saldo || 0,
-  limite: pagamento.limite || 0
+nome: pagamento.cliente || pagamento.nome_cliente || pagamento.nome || "Cliente",
+saldo: Number(pagamento.saldo || pagamento.saldo_atual || 0),
+limite: Number(pagamento.limite || pagamento.limite_credito || 0)
 };
 
 imprimirComprovantePagamento(
-  clienteObj,
-  Number(pagamento.valor),
-  pagamento.forma_pagamento,
-  pagamento.numero_recibo,
-  true
+clienteObj,
+Number(pagamento.valor || pagamento.valor_pago || 0),
+pagamento.forma_pagamento || pagamento.forma || "PIX",
+pagamento.numero_recibo || pagamento.id,
+true
 );
 
 }
@@ -3447,6 +3484,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
