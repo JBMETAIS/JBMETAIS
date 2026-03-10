@@ -1154,7 +1154,7 @@ if(ultimaVenda){
 numeroPedido = String(Number(ultimaVenda.numero_venda)+1).padStart(5,"0");
 }
  
-const { data: vendaNormalCriada, error: erroVenda } = await supabaseClient
+const { data: vendaNormalCriada, error: erroVendaNormal } = await supabaseClient
 .from("vendas")
 .insert([{
   numero_venda: numeroPedido,
@@ -1175,7 +1175,7 @@ const { data: vendaNormalCriada, error: erroVenda } = await supabaseClient
 .select()
 .single();
 
-if (erroVenda) {
+if (erroVendaNormal) {
   console.error(erroVenda);
   alert("Erro ao salvar venda!");
   return;
@@ -3484,6 +3484,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
