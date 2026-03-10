@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Sistema JB SANTOS</title>
+<title>Sistema JB Santos</title>
 <link rel="icon" type="image/png" href="iconejb.png">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -1256,18 +1256,22 @@ itens = carrinho.map(i => ({
 }));
 
 }
+
 let cliente = dadosVenda
  ? (dadosVenda.nome_do_cliente || dadosVenda.cliente || dadosVenda.nome_cliente)
  : clienteNome.value;
+
 let numeroVenda = dadosVenda
  ? (dadosVenda.numero || dadosVenda.numero_venda || dadosVenda.id)
  : "";
- let numeroFormatado = numeroVenda
+
+let numeroFormatado = numeroVenda
  ? "PEDIDO-" + String(numeroVenda).padStart(4, "0")
-  : "-";
+ : "-";
+
 let desconto = dadosVenda ? dadosVenda.desconto : descontoAtual;
 desconto = Number(desconto || 0);
- 
+
 let valorRec = dadosVenda
  ? (dadosVenda.valorRecebido || dadosVenda.valor_recebido || 0)
  : Number(document.getElementById("valorRecebido")?.value || 0);
@@ -1278,8 +1282,7 @@ let valorTroco = dadosVenda
 
 valorRec = Number(valorRec || 0);
 valorTroco = Number(valorTroco || 0);
- 
- 
+
 let dataVenda = dadosVenda
  ? new Date(dadosVenda.created_at || dadosVenda.data).toLocaleString("pt-BR")
  : new Date().toLocaleString("pt-BR");
@@ -1290,17 +1293,35 @@ let html = `
 <style>
 body{
 font-family: monospace;
-width: 280px;
+width:280px;
 margin:0;
 padding:10px;
+font-size:12px;
 }
 
 .center{
 text-align:center;
 }
 
+.titulo{
+font-size:15px;
+font-weight:bold;
+}
+
+.total{
+font-size:16px;
+font-weight:bold;
+}
+
+.linha{
+display:flex;
+justify-content:space-between;
+}
+
 hr{
+border:none;
 border-top:1px dashed #000;
+margin:6px 0;
 }
 
 table{
@@ -1316,37 +1337,36 @@ vertical-align:top;
 word-break:break-word;
 }
 
-td:nth-child(1){
-width:55px;
-}
+td:nth-child(1){ width:55px; }
+td:nth-child(2){ width:155px; }
+td:nth-child(3){ width:60px; text-align:right; }
 
-td:nth-child(2){
-width:155px;
-}
-
-td:nth-child(3){
-width:60px;
-text-align:right;
+small{
+font-size:10px;
 }
 </style>
 </head>
+
 <body>
 
 <div class="center">
-<strong>${tipo}</strong><br>
-${config.nome || "JB SANTOS"}<br>
+<div class="titulo">${tipo}</div>
+<strong>${config.nome || "JB SANTOS"}</strong><br>
 CNPJ: ${config.cnpj || ""}<br>
 ${config.endereco || ""}<br>
 ${config.telefone || ""}<br>
 <br>
-<strong>*********** CUPOM NÃO FISCAL ***********</strong><br>
+<strong>******** CUPOM NÃO FISCAL ********</strong>
 </div>
 
 <hr>
 
-<strong>${numeroFormatado}</strong><br>
+<div class="linha">
+<span><strong>${numeroFormatado}</strong></span>
+<span>${dataVenda}</span>
+</div>
+
 Cliente: ${cliente || "Consumidor"}<br>
-Data: ${dataVenda}<br>
 
 <hr>
 
@@ -1378,28 +1398,59 @@ html += `
 
 <hr>
 
-Desconto: R$ ${desconto.toFixed(2)}<br>
-TOTAL: ${total.toFixed(2)}<br>
+<div class="linha">
+<span>Desconto:</span>
+<span>R$ ${desconto.toFixed(2)}</span>
+</div>
+
+<div class="linha total">
+<span>TOTAL:</span>
+<span>R$ ${total.toFixed(2)}</span>
+</div>
+
+<hr>
 
 ${pagamento==="dinheiro" ? `
-Valor Recebido: R$ ${Number(valorRec).toFixed(2)}<br>
-Troco: R$ ${Number(valorTroco).toFixed(2)}<br>
+<div class="linha">
+<span>Valor Recebido:</span>
+<span>R$ ${Number(valorRec).toFixed(2)}</span>
+</div>
+<div class="linha">
+<span>Troco:</span>
+<span>R$ ${Number(valorTroco).toFixed(2)}</span>
+</div>
+<hr>
 ` : ""}
 
 ${pagamento === "cartao" ? `
-Parcelas: ${(parc || 1)}x<br>
-Valor Parcela: R$ ${(Number(total) / (parc || 1)).toFixed(2)}<br>
+<div class="linha">
+<span>Parcelas:</span>
+<span>${(parc || 1)}x</span>
+</div>
+<div class="linha">
+<span>Valor Parcela:</span>
+<span>R$ ${(Number(total) / (parc || 1)).toFixed(2)}</span>
+</div>
+<hr>
 ` : ""}
 
-Forma Pagamento: ${
+<div class="linha">
+<span>Forma Pagamento:</span>
+<span>${
 pagamento === "dinheiro" ? "Dinheiro" :
 pagamento === "debito" ? "Cartão Débito" :
 pagamento === "cartao" ? "Cartão Crédito" :
 pagamento === "pix" ? "Pix" : pagamento
-}<br>
+}</span>
+</div>
 
+<br>
+
+<div class="center">
+Obrigado pela preferência
 <br><br>
-<div class="center">Obrigado pela preferência</div>
+<small>Sistema JB Santos</small>
+</div>
 
 </body>
 </html>
@@ -1409,7 +1460,6 @@ w.document.write(html);
 w.document.close();
 w.print();
 }
-
 
 function reimprimirCupom(index){
 
@@ -3005,23 +3055,52 @@ let html = `
 <head>
 <style>
 body{
-font-family:monospace;
-width:280px;
-margin:0;
-padding:10px;
-font-size:12px;
+    font-family: monospace;
+    width:280px;
+    margin:0;
+    padding:10px;
+    font-size:12px;
 }
-.center{text-align:center;}
-hr{border-top:1px dashed #000;}
+
+.center{
+    text-align:center;
+}
+
+.titulo{
+    font-size:14px;
+    font-weight:bold;
+}
+
+.valor{
+    font-size:14px;
+    font-weight:bold;
+}
+
+.linha{
+    display:flex;
+    justify-content:space-between;
+}
+
+hr{
+    border:none;
+    border-top:1px dashed #000;
+    margin:6px 0;
+}
+
+small{
+    font-size:10px;
+}
 </style>
 </head>
+
 <body>
 
 <div class="center">
 ${reimpressao ? "<strong>REIMPRESSÃO</strong><br>" : ""}
-<strong>COMPROVANTE DE PAGAMENTO</strong><br>
+<div class="titulo">COMPROVANTE DE PAGAMENTO</div>
 Recibo Nº: ${recibo}<br><br>
-${config.nome || "JB SANTOS"}<br>
+
+<strong>${config.nome || "JB SANTOS"}</strong><br>
 CNPJ: ${config.cnpj || ""}<br>
 ${config.endereco || ""}<br>
 ${config.telefone || ""}<br>
@@ -3029,28 +3108,58 @@ ${config.telefone || ""}<br>
 
 <hr>
 
-Cliente: ${cliente.nome}<br>
-Data: ${new Date().toLocaleString("pt-BR")}<br>
+<div class="linha">
+<span>Cliente:</span>
+<span>${cliente.nome}</span>
+</div>
+
+<div class="linha">
+<span>Data:</span>
+<span>${new Date().toLocaleString("pt-BR")}</span>
+</div>
 
 <hr>
 
-Forma de Pagamento: ${formaPagamento}<br>
-Valor Pago: R$ ${valor.toFixed(2)}<br>
+<div class="linha">
+<span>Forma Pagto:</span>
+<span>${formaPagamento}</span>
+</div>
+
+<div class="linha valor">
+<span>Valor Pago:</span>
+<span>R$ ${valor.toFixed(2)}</span>
+</div>
 
 <br>
 
-         Pgto. de conta em aberto
+<div class="center">
+Pgto. de conta em aberto
+</div>
 
 <hr>
 
-Saldo Após Pagamento: R$ ${saldoApos.toFixed(2)}<br>
-Limite Disponível: R$ ${disponivel.toFixed(2)}<br>
+<div class="linha">
+<span>Saldo Atual:</span>
+<span>R$ ${saldoApos.toFixed(2)}</span>
+</div>
+
+<div class="linha">
+<span>Limite Disponível:</span>
+<span>R$ ${disponivel.toFixed(2)}</span>
+</div>
 
 <hr>
 
 <div class="center">
 Pagamento registrado com sucesso<br><br>
-Assinatura: ______________________
+Assinatura:<br><br>
+________________________
+</div>
+
+<br>
+
+<div class="center">
+<small>Documento não fiscal</small>
 </div>
 
 </body>
@@ -3064,19 +3173,26 @@ w.print();
 }
 
 
-
 async function reimprimirComprovantePagamento(id){
 
-let pagamento = vendas.find(v => v.id === id);
+id = Number(id);
+
+let pagamento = vendas.find(v => Number(v.id) === id);
 
 if(!pagamento){
   alert("Pagamento não encontrado");
   return;
 }
 
+let clienteObj = {
+  nome: pagamento.cliente || pagamento.nome_cliente || "Cliente",
+  saldo: pagamento.saldo || 0,
+  limite: pagamento.limite || 0
+};
+
 imprimirComprovantePagamento(
-  pagamento.cliente,
-  pagamento.valor,
+  clienteObj,
+  Number(pagamento.valor),
   pagamento.forma_pagamento,
   pagamento.numero_recibo,
   true
@@ -3332,6 +3448,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
