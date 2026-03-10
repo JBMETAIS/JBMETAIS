@@ -1154,7 +1154,7 @@ if(ultimaVenda){
 numeroPedido = String(Number(ultimaVenda.numero_venda)+1).padStart(5,"0");
 }
  
-const { data: vendaCriada, error: erroVenda } = await supabaseClient
+const { data: vendaNormalCriada, error: erroVenda } = await supabaseClient
 .from("vendas")
 .insert([{
   numero_venda: numeroPedido,
@@ -1181,7 +1181,7 @@ if (erroVenda) {
   return;
 }
 
-const vendaIdBanco = vendaCriada.id;
+const vendaIdBanco = vendaNormalCriada.id;
 
 
 // inserir itens
@@ -1217,13 +1217,13 @@ for (let item of carrinho) {
 await carregarProdutos();
 atualizarProdutos();
 
-vendaCriada.valorRecebido = valorRecebido;
-vendaCriada.troco = troco;
+vendaNormalCriada.valorRecebido = valorRecebido;
+vendaNormalCriada.troco = troco;
 
 
 // imprimir cupom
 if(formaPagamento !== "conta"){
-   imprimirCupom(total,"VENDA", vendaCriada);
+   imprimirCupom(total,"VENDA", vendaNormalCriada);
 }
 
 alert("Venda finalizada com sucesso!");
@@ -3484,6 +3484,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
