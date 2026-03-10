@@ -2135,7 +2135,7 @@ ${v.tipo === "CONTA_CLIENTE" ? `
 
 ${v.tipo === "PAGAMENTO_CONTA" ? `
 <div class="tooltip">
-<button class="btn-small" onclick="reimprimirComprovantePagamento('${v.id}')">🧾</button>
+<button class="btn-small" onclick="reimprimirComprovantePagamento('${v.pagamento_id}')">🧾</button>
 <span class="tooltip-text">Reimprimir Comprovante</span>
 </div>
 ` : ""}
@@ -2609,21 +2609,22 @@ async function registrarPagamento(cliente, valor, formaPagamento){
     }]);
 
   // registrar no histórico geral
-  await supabaseClient
-    .from("vendas")
-    .insert([{
-      numero_venda: null,
-      cliente_id: cliente.id,
-      nome_do_cliente: cliente.nome,
-      forma_pagamento: formaPagamento,
-      subtotal: valor,
-      desconto: 0,
-      total: valor,
-      valor_recebido: valor,
-      troco: 0,
-      parcelas: 1,
-      tipo: "PAGAMENTO_CONTA"
-    }]);
+ await supabaseClient
+.from("vendas")
+.insert([{
+  numero_venda: null,
+  cliente_id: cliente.id,
+  nome_do_cliente: cliente.nome,
+  forma_pagamento: formaPagamento,
+  subtotal: valor,
+  desconto: 0,
+  total: valor,
+  valor_recebido: valor,
+  troco: 0,
+  parcelas: 1,
+  tipo: "PAGAMENTO_CONTA",
+  pagamento_id: data.id
+}]);
 
   // atualizar cliente
   await supabaseClient
@@ -3052,11 +3053,6 @@ alert("Pagamento não encontrado");
 return;
 }
 
-if(!data.comprovante_html){
-alert("Comprovante não encontrado");
-return;
-}
-
 imprimirHtml(data.comprovante_html);
 
 }
@@ -3414,6 +3410,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
