@@ -3123,7 +3123,7 @@ ${config.telefone || ""}<br>
 
 <div class="linha">
 <span>Data:</span>
-<span>${dataPagamento}</span>
+<span>${dataPagamento || new Date().toLocaleString("pt-BR")}</span>
 </div>
 
 <hr>
@@ -3190,16 +3190,16 @@ return;
 
 let clienteObj = {
 nome: pagamento.cliente || pagamento.nome_cliente || pagamento.nome || "Cliente",
-saldo: Number(pagamento.saldo || pagamento.saldo_atual || 0),
+saldo: Number(pagamento.saldo_apos || pagamento.saldo || 0),
 limite: Number(pagamento.limite || pagamento.limite_credito || 0)
 };
 
 imprimirComprovantePagamento(
 clienteObj,
 Number(pagamento.valor || pagamento.valor_pago || 0),
-pagamento.forma_pagamento || pagamento.forma || "PIX",
+pagamento.forma_pagamento || pagamento.forma || "Dinheiro",
 pagamento.numero_recibo || pagamento.id,
-pagamento.data || pagamento.data_pagamento,
+pagamento.data_pagamento || pagamento.data,
 true
 );
 
@@ -3454,6 +3454,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
