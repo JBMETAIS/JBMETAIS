@@ -1275,7 +1275,7 @@ let cliente = dadosVenda
  : clienteNome.value;
 
 let numeroVenda = dadosVenda
- ? (dadosVenda.numero || dadosVenda.numero_venda || dadosVenda.id)
+ ? (dadosVenda.pedido || dadosVenda.numero || dadosVenda.numero_venda || dadosVenda.id)
  : "";
 
 let numeroFormatado = numeroVenda
@@ -3449,6 +3449,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
