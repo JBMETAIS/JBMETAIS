@@ -585,7 +585,15 @@ style="padding:8px;width:250px;margin-bottom:10px;border-radius:6px;border:1px s
 <table id="tEstoque"></table>
 </section>
 
-<section id="historico" style="display:none">
+<section id="historico" style="
+display:none;
+position:sticky;
+top:0;
+z-index:1000;
+background:#111;
+padding:10px;
+">
+
 <h1>Histórico</h1>
 
 <input 
@@ -596,8 +604,8 @@ style="padding:8px;width:300px;margin-bottom:10px;border-radius:6px;border:1px s
 >
 
 <table id="tHistorico"></table>
-</section>
 
+</section>
 <section id="config" style="display:none">
 <h1>Configurações da Empresa</h1>
 <div class="card">
@@ -3612,6 +3620,7 @@ async function logout(){
 
 </body>
 </html>
+
 
 
 
