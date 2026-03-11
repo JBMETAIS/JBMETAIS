@@ -365,42 +365,28 @@ transform:scale(1.05);
 }
 
 
-.botao-logout{
-position:fixed;
-
-top:20px;
-right:25px;
-
-background:#c62828;
-color:#fff;
-
-border:0;
-padding:10px 18px;
-
-border-radius:8px;
-font-weight:bold;
-
-cursor:pointer;
-
-z-index:999;
-transition:0.2s;
-}
-
 .botao-logout:hover{
 transform:scale(1.05);
 box-shadow:0 4px 10px rgba(0,0,0,0.4);
 }
 
 .top-right{
-    position: absolute;
+    position: fixed;
     top: 15px;
     right: 20px;
 
     display: flex;
     align-items: center;
     gap: 10px;
+
+    z-index: 1000;
 }
 
+
+body{
+    padding-top:60px;
+}
+  
 .usuario{
     color: white;
     display: flex;
@@ -3612,3 +3598,4 @@ async function logout(){
 
 </body>
 </html>
+
