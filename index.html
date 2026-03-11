@@ -17,9 +17,15 @@ const SUPABASE_KEY = "sb_publishable_9KqHb2QZvr6HbT6UUZWJXQ_PGvdHHD_";
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 async function verificarLogin() {
-  const { data } = await supabaseClient.auth.getSession();
+  try {
+    const { data } = await supabaseClient.auth.getSession();
 
-  if (!data.session) {
+    if (!data.session) {
+      window.location.href = "login.html";
+    }
+
+  } catch (error) {
+    console.error("Erro ao verificar login:", error);
     window.location.href = "login.html";
   }
 }
@@ -3581,7 +3587,7 @@ mostrarUsuario();
   
 async function logout(){
   await supabaseClient.auth.signOut();
-  window.location.href = "login.html";
+  window.location.replace("login.html");
 }
 
 
@@ -3593,6 +3599,7 @@ async function logout(){
 
 </body>
 </html>
+
 
 
 
