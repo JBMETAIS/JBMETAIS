@@ -386,30 +386,33 @@ box-shadow:0 4px 10px rgba(0,0,0,0.4);
     gap: 10px;
 }
 
-.usuario{
-    background: rgba(0,0,0,0.4);
-    padding: 5px 10px;
-    border-radius: 6px;
-#usuario-logado{
-    color: white;
-    font-weight: 500;
+.topo-usuario{
+position:fixed;
+
+top:20px;
+right:25px;
+
+display:flex;
+align-items:center;
+gap:15px;
+
+color:white;
+font-weight:bold;
+
+z-index:999;
 }
 
-.btn-sair{
-    background-color: #e74c3c !important;
-    color: #ffffff !important;
-    border: none !important;
-    padding: 6px 14px !important;
-    border-radius: 6px !important;
-    font-size: 14px !important;
-    font-weight: 500 !important;
-    cursor: pointer !important;
-    transition: all 0.2s ease !important;
-}
+.botao-logout{
+background:#c62828;
+color:#fff;
 
-.btn-sair:hover{
-    background-color: #c0392b !important;
-    transform: scale(1.05);
+border:0;
+padding:8px 16px;
+
+border-radius:6px;
+
+cursor:pointer;
+font-weight:bold;
 }
  
 </style>
@@ -3591,6 +3594,7 @@ async function logout(){
 
 </body>
 </html>
+
 
 
 
