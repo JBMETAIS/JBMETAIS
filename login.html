@@ -291,40 +291,32 @@ inset 0 0 10px rgba(0,0,0,0.8);
   // 2️⃣ Função de login
   // ------------------------------
  async function login() {
+  try {
+    console.log("Função login iniciada");
 
-  const botao = document.getElementById("btn-login");
-  botao.disabled = true;
-  botao.innerText = "Entrando...";
+    const usuario = document.getElementById("usuario").value.trim();
+    const senha = document.getElementById("senha").value.trim();
 
-  const usuario = document.getElementById("usuario").value.trim();
-  const senha = document.getElementById("senha").value.trim();
+    console.log("Usuario:", usuario);
+    console.log("Senha:", senha);
 
-  if (!usuario || !senha) {
-    document.getElementById("erro").innerText = "Preencha todos os campos";
-    botao.disabled = false;
-    botao.innerText = "Entrar";
-    return;
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+      email: usuario,
+      password: senha
+    });
+
+    console.log("Data:", data);
+    console.log("Error:", error);
+
+    if (error) {
+      throw error;
+    }
+
+    alert("Login realizado!");
+  } catch (err) {
+    console.error("ERRO COMPLETO:", err);
+    alert(err.message);
   }
-
-console.log("Usuario:", usuario);
-console.log("Senha:", senha);
-   
-  const { data, error } = await supabaseClient.auth.signInWithPassword({
-  email: "jbmetais.loja@gmail.com",
-  password: senha
-});
-
-console.log(error);
-console.log(data);
-
-  if (error) {
-    document.getElementById("erro").innerText = "Usuário ou senha inválidos";
-    botao.disabled = false;
-    botao.innerText = "Entrar";
-    return;
-  }
-
- window.location.href = "/index.html";
 }
 
   // ------------------------------
