@@ -30,12 +30,11 @@ async function verificarLogin() {
     alert("Sessão: " + JSON.stringify(data.session));
     alert("Erro: " + JSON.stringify(error));
 
-    if (!data.session) {
-      alert("SEM SESSÃO");
-      return; // TEMPORÁRIO
-    }
+   if (!data.session) {
+  alert("SEM SESSÃO");
+}
 
-    document.body.style.visibility = "visible";
+document.body.style.visibility = "visible";
 
   } catch (error) {
     alert("ERRO: " + error.message);
