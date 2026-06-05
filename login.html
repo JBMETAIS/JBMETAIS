@@ -297,22 +297,18 @@ inset 0 0 10px rgba(0,0,0,0.8);
     const usuario = document.getElementById("usuario").value.trim();
     const senha = document.getElementById("senha").value.trim();
 
-    console.log("Usuario:", usuario);
-    console.log("Senha:", senha);
-
     const { data, error } = await supabaseClient.auth.signInWithPassword({
       email: usuario,
       password: senha
     });
 
-    console.log("Data:", data);
-    console.log("Error:", error);
-
     if (error) {
       throw error;
     }
 
-    alert("Login realizado!");
+    // Login deu certo
+    window.location.href = "index.html";
+
   } catch (err) {
     console.error("ERRO COMPLETO:", err);
     alert(err.message);
