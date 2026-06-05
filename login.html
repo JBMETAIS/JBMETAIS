@@ -306,10 +306,16 @@ inset 0 0 10px rgba(0,0,0,0.8);
     return;
   }
 
+console.log("Usuario:", usuario);
+console.log("Senha:", senha);
+   
   const { data, error } = await supabaseClient.auth.signInWithPassword({
-    email: usuario,
-    password: senha
-  });
+  email: "jbmetais.loja@gmail.com",
+  password: senha
+});
+
+console.log(error);
+console.log(data);
 
   if (error) {
     document.getElementById("erro").innerText = "Usuário ou senha inválidos";
