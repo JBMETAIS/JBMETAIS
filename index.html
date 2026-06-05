@@ -4147,7 +4147,10 @@ const { data } = await supabaseClient
 .from("usuarios")
 .select("nome")
 .eq("id", userId)
-.single();
+.maybeSingle()
+
+  console.log("usuario:", data);
+console.log("erro:", error);
 
 if(data){
 document.getElementById("usuario-logado").innerText =
