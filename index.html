@@ -24,19 +24,24 @@ const SUPABASE_KEY = "sb_publishable_9KqHb2QZvr6HbT6UUZWJXQ_PGvdHHD_";
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 async function verificarLogin() {
-try {
-const { data } = await supabaseClient.auth.getSession();
+  try {
+    const { data, error } = await supabaseClient.auth.getSession();
 
-if (!data.session) {
-window.location.replace("login.html");
-} else {
-document.body.style.visibility = "visible";
-}
+    console.log("SESSION:", data.session);
+    console.log("ERROR:", error);
 
-} catch (error) {
-console.error("Erro ao verificar login:", error);
-window.location.replace("login.html");
-}
+    if (!data.session) {
+      console.log("SEM SESSÃO");
+      window.location.replace("login.html");
+    } else {
+      console.log("SESSÃO ENCONTRADA");
+      document.body.style.visibility = "visible";
+    }
+
+  } catch (error) {
+    console.error("Erro ao verificar login:", error);
+    window.location.replace("login.html");
+  }
 }
 
 verificarLogin();
