@@ -21,7 +21,11 @@ visibility: hidden;
 const SUPABASE_URL = "https://mvjhvzzuijrlzrzmywcl.supabase.co";
 const SUPABASE_KEY = "sb_publishable_9KqHb2QZvr6HbT6UUZWJXQ_PGvdHHD_";
 
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const { createClient } = supabase;
+const supabaseClient = createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
 async function verificarLogin() {
   try {
