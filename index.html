@@ -27,20 +27,18 @@ async function verificarLogin() {
   try {
     const { data, error } = await supabaseClient.auth.getSession();
 
-    console.log("SESSION:", data.session);
-    console.log("ERROR:", error);
+    alert("Sessão: " + JSON.stringify(data.session));
+    alert("Erro: " + JSON.stringify(error));
 
     if (!data.session) {
-      console.log("SEM SESSÃO");
-      window.location.replace("login.html");
-    } else {
-      console.log("SESSÃO ENCONTRADA");
-      document.body.style.visibility = "visible";
+      alert("SEM SESSÃO");
+      return; // TEMPORÁRIO
     }
 
+    document.body.style.visibility = "visible";
+
   } catch (error) {
-    console.error("Erro ao verificar login:", error);
-    window.location.replace("login.html");
+    alert("ERRO: " + error.message);
   }
 }
 
