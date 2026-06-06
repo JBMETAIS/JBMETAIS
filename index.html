@@ -4143,17 +4143,23 @@ if(!userData.user) return;
 
 const userId = userData.user.id;
 
-const { data } = await supabaseClient
+const { data, error } = await supabaseClient
 .from("usuarios")
 .select("nome")
 .eq("id", userId)
-.maybeSingle()
+.maybeSingle();
 
-console.log("Auth User:", userData.user.id);
-  
+console.log("usuario:", data);
+console.log("erro:", error);
+
+if(error){
+   console.error(error);
+   return;
+}
+
 if(data){
-document.getElementById("usuario-logado").innerText =
-"👤 " + data.nome;
+   document.getElementById("usuario-logado").innerText =
+      "👤 " + data.nome;
 }
 
 /* só mostrar na tela inicial */
