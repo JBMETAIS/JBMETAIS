@@ -21,19 +21,30 @@ visibility: hidden;
 const SUPABASE_URL = "https://mvjhvzzuijrlzrzmywcl.supabase.co";
 const SUPABASE_KEY = "sb_publishable_9KqHb2QZvr6HbT6UUZWJXQ_PGvdHHD_";
 
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+async function verificarLogin() {
 
-supabaseClient.auth.onAuthStateChange((event, session) => {
-  
-  if (!session) {
+  const { data } = await supabaseClient.auth.getSession();
+
+  if (!data.session) {
     window.location.replace("login.html");
     return;
   }
 
   document.body.style.visibility = "visible";
+}
+
+// roda na inicialização
+verificarLogin();
+
+// escuta mudanças (logout, expiração, etc)
+supabaseClient.auth.onAuthStateChange((event, session) => {
+
+  if (!session) {
+    window.location.replace("login.html");
+  }
 
 });
-   
+  
 </script>
 
 <style>
