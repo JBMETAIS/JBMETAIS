@@ -21,28 +21,22 @@ visibility: hidden;
 const SUPABASE_URL = "https://mvjhvzzuijrlzrzmywcl.supabase.co";
 const SUPABASE_KEY = "sb_publishable_9KqHb2QZvr6HbT6UUZWJXQ_PGvdHHD_";
 
-const { createClient } = supabase;
-const supabaseClient = createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 async function verificarLogin() {
-  try {
-    const { data, error } = await supabaseClient.auth.getSession();
+try {
+const { data } = await supabaseClient.auth.getSession();
 
-    alert("Sessão: " + JSON.stringify(data.session));
-    alert("Erro: " + JSON.stringify(error));
-
-   if (!data.session) {
-  alert("SEM SESSÃO");
+if (!data.session) {
+window.location.replace("login.html");
+} else {
+document.body.style.visibility = "visible";
 }
 
-document.body.style.visibility = "visible";
-
-  } catch (error) {
-    alert("ERRO: " + error.message);
-  }
+} catch (error) {
+console.error("Erro ao verificar login:", error);
+window.location.replace("login.html");
+}
 }
 
 verificarLogin();
@@ -2619,11 +2613,7 @@ tabela.innerHTML += `
 <td style="color:${cor};font-weight:bold;">${status}</td>
 <td>${bolinha}</td>
 <td>
-
-<div class="tooltip">
   <button class="btn-small" onclick="abrirModalEstoque('${p.id}')">✏️</button>
-  <span class="tooltip-text">Inventário</span>
-  </div>  
 </td>
 
 </tr>
@@ -4143,23 +4133,15 @@ if(!userData.user) return;
 
 const userId = userData.user.id;
 
-const { data, error } = await supabaseClient
+const { data } = await supabaseClient
 .from("usuarios")
 .select("nome")
 .eq("id", userId)
-.maybeSingle();
-
-console.log("usuario:", data);
-console.log("erro:", error);
-
-if(error){
-   console.error(error);
-   return;
-}
+.single();
 
 if(data){
-   document.getElementById("usuario-logado").innerText =
-      "👤 " + data.nome;
+document.getElementById("usuario-logado").innerText =
+"👤 " + data.nome;
 }
 
 /* só mostrar na tela inicial */
@@ -4176,7 +4158,6 @@ document.getElementById("topUser").style.display = "flex";
 }
 
 mostrarUsuario();
-
 
 
 async function logout(){
