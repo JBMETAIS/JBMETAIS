@@ -273,7 +273,7 @@ inset 0 0 10px rgba(0,0,0,0.8);
   <button type="button" class="botao-olho" onclick="toggleSenha()">👁</button>
 </div>
 
-<button id="btn-login" onclick="login()">Entrar</button>
+<button onclick="login()">Entrar</button>
 
 <div id="erro" class="erro"></div>
 
@@ -290,32 +290,37 @@ inset 0 0 10px rgba(0,0,0,0.8);
   // ------------------------------
   // 2️⃣ Função de login
   // ------------------------------
-  async function login() {
-  try {
-    console.log("Função login iniciada");
+ async function login() {
 
-    const usuario = document.getElementById("usuario").value.trim();
-    const senha = document.getElementById("senha").value.trim();
+  const botao = document.querySelector("button");
+  botao.disabled = true;
+  botao.innerText = "Entrando...";
 
-    const { data, error } = await supabaseClient.auth.signInWithPassword({
-      email: usuario,
-      password: senha
-    });
+  const usuario = document.getElementById("usuario").value.trim();
+  const senha = document.getElementById("senha").value.trim();
 
-    if (error) {
-      throw error;
-    }
-
-   alert("Vou para index.html");
-window.location.href = "index.html";
-
-  } catch (err) {
-    console.error("ERRO COMPLETO:", err);
-    alert(err.message);
+  if (!usuario || !senha) {
+    document.getElementById("erro").innerText = "Preencha todos os campos";
+    botao.disabled = false;
+    botao.innerText = "Entrar";
+    return;
   }
+
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email: usuario,
+    password: senha
+  });
+
+  if (error) {
+    document.getElementById("erro").innerText = "Usuário ou senha inválidos";
+    botao.disabled = false;
+    botao.innerText = "Entrar";
+    return;
+  }
+
+ window.location.href = "/index.html";
 }
 
-  
   // ------------------------------
   // 3️⃣ Função para mostrar/ocultar senha
   // ------------------------------
@@ -342,7 +347,4 @@ document.addEventListener("keydown", function(event) {
 </script>
 
 </body>
-
 </html>
-
-
