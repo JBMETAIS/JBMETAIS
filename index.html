@@ -4143,14 +4143,11 @@ if(!userData.user) return;
 
 const userId = userData.user.id;
 
-const { data, error } = await supabaseClient
+const { data } = await supabaseClient
 .from("usuarios")
 .select("nome")
 .eq("id", userId)
-.maybeSingle();
-
-console.log("usuario:", data);
-console.log("erro:", error);
+.single();
 
 if(data){
 document.getElementById("usuario-logado").innerText =
@@ -4171,6 +4168,7 @@ document.getElementById("topUser").style.display = "flex";
 }
 
 mostrarUsuario();
+
 
 
 async function logout(){
