@@ -4143,13 +4143,13 @@ if(!userData.user) return;
 
 const userId = userData.user.id;
 
-const { data } = await supabaseClient
+const { data, error } = await supabaseClient
 .from("usuarios")
 .select("nome")
 .eq("id", userId)
-.maybeSingle()
+.maybeSingle();
 
-  console.log("usuario:", data);
+console.log("usuario:", data);
 console.log("erro:", error);
 
 if(data){
