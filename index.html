@@ -4147,8 +4147,10 @@ const { data } = await supabaseClient
 .from("usuarios")
 .select("nome")
 .eq("id", userId)
-.single();
+.maybeSingle()
 
+console.log("Auth User:", userData.user.id);
+  
 if(data){
 document.getElementById("usuario-logado").innerText =
 "👤 " + data.nome;
